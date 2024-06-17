@@ -1,0 +1,215 @@
+\section{重要结论}
+
+\subsection{结论描述}
+
+记$\bm{W}$是以$\bm{w}$为对角元素的对角矩阵，那么
+
+\begin{mingti}\label{mingti_lr_sol}
+    $\bm{b}$的解$\bm{\hat{b}}$ 的形式为
+    \begin{equation}\label{eq_lr_hat_b_sol}
+        \bm{\hat{b}} = [\bm{X^TWX}]^{-1}\bm{X^TWY}
+    \end{equation}
+
+    等权回归时，上述解特化为
+    \begin{equation}
+        \bm{\hat{b}} = [\bm{X^TX}]^{-1}\bm{X^TY}
+    \end{equation}
+\end{mingti}
+
+\begin{mingti}\label{mingti_lr_sum_square}
+    给定任意$\bm{b^*}$，记$\bm{Y^*}=\bm{Xb^*}$，以及$\bm{\hat{Y}}=\bm{X\hat{b}}$，那么有
+    \begin{equation}
+        ||\bm{Y} - \bm{Y^*}||_{\bm{w}}^2 = ||\bm{Y} - \bm{\hat{Y}}||_{\bm{w}}^2 + ||\bm{\hat{Y}} - \bm{Y^*}||_{\bm{w}}^2
+    \end{equation}
+
+    或者
+
+    \begin{equation}
+        SST = SSE + SSR
+    \end{equation}
+
+    其中：
+
+    \begin{equation}
+        \left\{
+        \begin{array}{rcl}
+            SST & = & ||\bm{Y} - \bm{Y^*}||_{\bm{w}}^2 = (\bm{Y} - \bm{Y^*})^T\bm{W}(\bm{Y} - \bm{Y^*}) = \sum_{i=1}^nw_i(y_i-y_i^*)^2                           \\
+            SSE & = & ||\bm{Y} - \bm{\hat{Y}}||_{\bm{w}}^2 = (\bm{Y} - \bm{\hat{Y}})^T\bm{W}(\bm{Y} - \bm{\hat{Y}})  = \sum_{i=1}^nw_i(y_i-\hat{y}_i)^2          \\
+            SSR & = & ||\bm{\hat{Y}} - \bm{Y^*}||_{\bm{w}}^2 = (\bm{\hat{Y}} - \bm{Y^*})^T\bm{W}(\bm{\hat{Y}} - \bm{Y^*}) = \sum_{i=1}^nw_i(\hat{y}_i - y_i^*)^2 \\
+        \end{array}
+        \right.
+    \end{equation}
+
+    由此，决定系数$R^2$的定义为
+
+    \begin{equation}
+        R^2 = \frac{SSR}{SST} =  1 - \frac{SSE}{SST} \, \in \, [0, 1]
+    \end{equation}
+\end{mingti}
+
+\begin{mingti}
+    对带有截距项的回归模型(即假定$\bm{X}$的第一列全部为$1$)，取定
+    \begin{equation}
+        \bm{b^*} = [\alpha,0,0,...,0]^T
+    \end{equation}
+
+    那么有
+
+    \begin{equation}
+        \sum_{i=1}^nw_i(y_i - \alpha)^2 = \sum_{i=1}^nw_i(y_i - \hat{y_i})^2 + \sum_{i=1}^nw_i(\hat{y_i} - \alpha)^2
+    \end{equation}
+
+    再进一步取定$\alpha = \bar{y} = \sum_{i=1}^nw_iy_i$，此即
+
+    \begin{equation}
+        \sum_{i=1}^nw_i(y_i - \bar{y})^2 = \sum_{i=1}^nw_i(y_i - \hat{y_i})^2 + \sum_{i=1}^nw_i(\hat{y_i} - \bar{y})^2
+    \end{equation}
+
+    这里$\alpha = \bar{y}$是让$\sum_{i=1}^nw_i(y_i - \alpha)^2$最小的取法，即
+
+    \begin{equation}
+        \bar{y} = \argmin_{\alpha}\sum_{i=1}^nw_i(y_i - \alpha)^2
+    \end{equation}
+
+    若在上面结论中退化为等权回归，即取所有$w_i=\frac{1}{n}$，那么有
+
+    \begin{equation}
+        \left\{
+        \begin{array}{rcl}
+            \bar{y}                       & = & \frac{1}{n}\sum_{i=1}^ny_i                                            \\
+            \sum_{i=1}^n(y_i - \bar{y})^2 & = & \sum_{i=1}^n(y_i - \hat{y_i})^2 + \sum_{i=1}^n(\hat{y_i} - \bar{y})^2
+        \end{array}
+        \right.
+    \end{equation}
+
+    此时决定系数$R^2$的形式为
+
+    \begin{equation}
+        R^2 = 1 - \frac{\sum_{i=1}^nw_i(y_i - \hat{y_i})^2}{\sum_{i=1}^nw_i(y_i - \bar{y})^2} = \frac{\sum_{i=1}^nw_i(\hat{y_i} - \bar{y})^2}{\sum_{i=1}^nw_i(y_i - \bar{y})^2}
+    \end{equation}
+\end{mingti}
+
+\begin{mingti}
+    对不带截距项的回归，可以取
+    \begin{equation}
+        \bm{b^*} = [0,0,0,...,0]^T
+    \end{equation}
+
+    那么有
+
+    \begin{equation}
+        \sum_{i=1}^nw_iy_i^2 = \sum_{i=1}^nw_i(y_i - \hat{y_i})^2 + \sum_{i=1}^nw_i\hat{y_i} ^2
+    \end{equation}
+
+    以及等权形式
+
+    \begin{equation}
+        \sum_{i=1}^ny_i^2 = \sum_{i=1}^n(y_i - \hat{y_i})^2 + \sum_{i=1}^n\hat{y_i} ^2
+    \end{equation}
+
+    此时，决定系数的形式为
+
+    \begin{equation}
+        R^2 = 1 - \frac{\sum_{i=1}^nw_i(y_i - \hat{y_i})^2}{\sum_{i=1}^nw_iy_i^2} = \frac{\sum_{i=1}^nw_i\hat{y_i}^2}{\sum_{i=1}^nw_iy_i^2}
+    \end{equation}
+\end{mingti}
+
+\begin{mingti}
+    记
+    \begin{equation}
+        \bm{\hat{\epsilon}} = \bm{Y} - \bm{\hat{Y}} = \bm{Y} - \bm{X\hat{b}}
+    \end{equation}
+
+    容易验证
+
+    \begin{equation}\label{eq_eps_by_X}
+        \bm{X^TW\hat{\epsilon}} = \bm{X^TWY} - \bm{X^TWX\hat{b}} = \bm{0}
+    \end{equation}
+
+    即$\bm{X}$的每一列都与$\bm{\epsilon}$（加权）正交。特别地，若是带有截距项的回归，$\bm{X}$中的$\bm{1}$也与$\bm{\epsilon}$正交。此即
+
+    \begin{equation}
+        0 = \bm{1^TW\hat{\epsilon}} = \bm{1^TW(Y - X\hat{b})} = \bar{y} - \bm{\bar{X}\hat{b}}
+    \end{equation}
+
+    即
+
+    \begin{equation}
+        \bar{y} = \bm{\bar{X}\hat{b}}
+    \end{equation}
+
+    其中
+
+    \begin{equation}
+        \bm{\bar{X}} = \sum_{i=1}^nw_i\bm{X_{i*}}
+    \end{equation}
+
+    表示$\bm{X}$按照行（样本）的加权平均，$\bm{X_{i*}}$表示$\bm{X}$的第$i$行。
+\end{mingti}
+
+\begin{mingti}
+    记
+    \begin{equation}
+        \bm{H} = \bm{[X^TWX]^{-1}X^TW}
+    \end{equation}
+
+    $\bm{H}$是$k\times n$的矩阵，且
+
+    \begin{equation}\label{eq_pure_factor_attr}
+        \bm{HX} = \bm{1}
+    \end{equation}
+
+    若将$\bm{X}$视为多因子模型的因子暴露，那么$H$是$k$个因子的纯因子组合矩阵，它的每一行代表一个纯因子组合在$n$个资产上的暴露（绝对值之和可能不是1，即带有杠杆）。\ref{eq_pure_factor_attr}表明，纯因子组合仅在它自己对应的因子上暴露为1，在其他因子的暴露上为0。
+\end{mingti}
+
+\subsection{结论证明}
+
+主要给出命题\ref{mingti_lr_sol}和命题\ref{mingti_lr_sum_square}的证明。后续几个证明在此基础上是显然的。
+
+若$\bm{\hat{b}}$满足
+
+\begin{equation}\label{eq_lr_hat_b_cond}
+    \bm{X^TWX\hat{b}} = \bm{X^TWY}
+\end{equation}
+
+注意在$\bm{X}$满秩的条件下，\ref{eq_lr_hat_b_cond}式等价于\ref{eq_lr_hat_b_sol}式。此时，对任意的$\bm{b^*}$以及$\bm{Y^*}=\bm{Xb^*}$，有：
+
+\begin{equation}
+    \begin{array}{rcl}
+        ||\bm{Y} - \bm{Y^*}||_{\bm{w}}^2 & =    & (\bm{Y} - \bm{Y^*})^T\bm{W}(\bm{Y} - \bm{Y^*})                                                                                                  \\
+                                         & =    & (\bm{Y} - \bm{\hat{Y}} + \bm{\hat{Y}} - \bm{Y^*})^T\bm{W}(\bm{Y} - \bm{\hat{Y}} + \bm{\hat{Y}} - \bm{Y^*})                                      \\
+                                         & =    & (\bm{Y} - \bm{\hat{Y}})^T\bm{W}(\bm{Y} - \bm{\hat{Y}}) + (\bm{\hat{Y}} - \bm{Y^*})^T\bm{W}(\bm{\hat{Y}} - \bm{Y^*})                             \\
+                                         & +    & 2(\bm{Y} - \bm{\hat{Y}})^T\bm{W}(\bm{\hat{Y}} - \bm{Y^*})                                                                                       \\
+                                         & =    & || \bm{Y} - \bm{\hat{Y}} ||_{\bm{w}}^2 + || \bm{\hat{Y}} - \bm{Y^*}||_{\bm{w}}^2 + 2(\bm{Y} - \bm{X\hat{b}})^T\bm{W}(\bm{X\hat{b}} - \bm{Xb^*}) \\
+                                         & =    & || \bm{Y} - \bm{\hat{Y}} ||_{\bm{w}}^2 + || \bm{\hat{Y}} - \bm{Y^*}||_{\bm{w}}^2 + 2(\bm{X^TWY} - \bm{X^TWX\hat{b}})^T(\bm{\hat{b}} - \bm{b^*}) \\
+                                         & =    & || \bm{Y} - \bm{\hat{Y}} ||_{\bm{w}}^2 + || \bm{\hat{Y}} - \bm{Y^*}||_{\bm{w}}^2                                                                \\
+                                         & \geq & || \bm{Y} - \bm{\hat{Y}} ||_{\bm{w}}^2
+    \end{array}
+\end{equation}
+
+\subsection{几何解释}
+
+\begin{itemize}
+    \item $\bm{Y^*}$是由$\bm{X}$的列向量所张成的线性空间$S$中的任一向量。
+    \item $\bm{\hat{Y}}$是$\bm{Y}$在$S$中的投影。
+    \item $|| \bm{Y} - \bm{\hat{Y}} ||_{\bm{w}}^2$是$\bm{Y}$到其投影$\bm{\hat{Y}}$的距离，该距离一定是小于等于$S$中任意向量$\bm{Y^*}$和$\bm{Y}$之间的距离$||\bm{Y} - \bm{Y^*}||_{\bm{w}}^2$的。等号成立的条件也恰好是$\bm{Y^*}$等于投影$\bm{\hat{Y}}$时取到。
+    \item $\bm{\hat{\epsilon}} = \bm{Y} - \bm{\hat{Y}}$是$\bm{Y}$到其投影$\bm{\hat{Y}}$的向量，显然其应该垂直于空间$S$中任意一个向量，此即\ref{eq_eps_by_X}式的几何意义。
+    \item 对于带截距项的回归，全$1$列是$S$中的一个向量，故$\alpha\bm{1}$也是。按照前述理论，垂直分解公式依然成立。即
+          \begin{equation}
+              ||\bm{Y} - \alpha\bm{1}||_{\bm{w}}^2 =|| \bm{Y} - \bm{\hat{Y}} ||_{\bm{w}}^2 + || \bm{\hat{Y}} - \alpha \bm{1}||_{\bm{w}}^2
+          \end{equation}
+    \item $\bm{Y}$在$\bm{1}$上的投影为
+          \begin{equation}
+              \bm{h} = \frac{\bm{Y^TW1}}{||\bm{1}||_{\bm{w}}^2} \bm{1} = \frac{\bm{Y^TW1}}{\bm{1^TW1}} \bm{1} = \bar{y}\bm{1}
+          \end{equation}
+
+          于是有
+          \begin{equation}
+              ||\bm{Y} - \alpha\bm{1}||_{\bm{w}}^2 \geq ||\bm{Y} - \bar{y}\bm{1}||_{\bm{w}}^2
+          \end{equation}
+
+          以及
+          \begin{equation}
+              ||\bm{Y} - \bar{y}\bm{1}||_{\bm{w}}^2 =||\bm{Y} - \bm{\hat{Y}}||_{\bm{w}}^2 + || \bm{\hat{Y}} - \bar{y}\bm{1}||_{\bm{w}}^2 \geq ||\bm{Y} - \bm{\hat{Y}}||_{\bm{w}}^2
+          \end{equation}
+\end{itemize}

@@ -1,0 +1,87 @@
+\section{Brownian Motion}
+
+假设连续随机过程$X_t$满足
+
+\begin{equation}
+    \ud X_t = a(X,t)\ud t + b(X,t)\ud z
+\end{equation}
+
+随机微分方程的与一般微分方程的区别核心是
+
+\begin{equation}\label{eq_z2t}
+    (\ud z)^2 = \ud t
+\end{equation}
+
+由\ref{eq_z2t}知道
+
+\begin{equation}
+    (\ud X_t)^2 = b^2(X_t,t) (\ud z)^2 = b^2(X_t,t) \ud t
+\end{equation}
+
+由Ito公式，对$G(X_t)$
+
+\begin{equation}\label{eq_ud_G}
+    \begin{array}{rcl}
+        \ud G(X_t,t) & = & \frac{\partial G}{\partial X_t}\ud X_t + \frac{\partial G}{\partial t}\ud t + \frac{1}{2}\frac{\partial^2 G}{\partial X_t^2} (\ud X_t)^2      \\
+                     & = & \frac{\partial G}{\partial X_t}\ud X_t + \frac{\partial G}{\partial t}\ud t + \frac{1}{2}\frac{\partial^2 G}{\partial X_t^2} b^2(X_t,t) \ud t
+    \end{array}
+\end{equation}
+
+取$G(X_t,t) = \ln X_t, a(X_t,t) = \mu X_t, b(X_t,t) = \sigma X_t$，则
+
+\begin{equation}
+    \frac{\ud X_t}{X_t} = \mu \ud t + \sigma \ud z
+\end{equation}
+
+以及
+
+\begin{equation}
+    \frac{\partial G}{\partial X_t} = \frac{1}{X_t},\quad \frac{\partial G}{\partial t} = 0, \quad \frac{\partial^2 G}{\partial X_t^2} = -\frac{1}{X_t^2}
+\end{equation}
+
+将这些结果带入\ref{eq_ud_G}中有
+
+\begin{equation}
+    \begin{array}{rcl}
+        \ud \ln X_t & = & \frac{\ud X_t}{X_t} + 0\cdot\ud t -\frac{1}{2}\frac{1}{X_t^2}X_t^2\sigma^2\ud t \\
+                    & = & \mu\ud t + \sigma \ud z - \frac{\sigma^2}{2}\ud t                               \\
+                    & = & (\mu - \frac{\sigma^2}{2})\ud t + \sigma \ud z
+    \end{array}
+\end{equation}
+
+由此可知
+
+\begin{equation}
+    \ln X_T - \ln X_0 \sim \N((\mu - \frac{\sigma^2}{2})T, \sigma^2T)
+\end{equation}
+
+或者
+
+\begin{equation}
+    \ln X_T  \sim \N(\ln X_0 + (\mu - \frac{\sigma^2}{2})T, \sigma^2T) = \N(\mu', \sigma'^2)
+\end{equation}
+
+其中
+
+\begin{equation}
+    \mu' = \ln X_0 + (\mu - \frac{\sigma^2}{2})T, \sigma'^2 = \sigma^2T
+\end{equation}
+
+使用公式\ref{eq_lognorm_e1}可知
+
+\begin{equation}
+    \E X_T = e^{\mu' + \frac{\sigma'^2}{2}} = e^{\ln X_0 + \mu T} = X_0e^{\mu T}
+\end{equation}
+
+综上即有
+
+\begin{equation}
+    \left\{
+    \begin{array}{rcl}
+        \ln \E \frac{X_T}{X_0} & = & \mu T                       \\
+        \E \ln \frac{X_T}{X_0} & = & \mu T - \frac{\sigma^2T}{2}
+    \end{array}
+    \right.
+\end{equation}
+
+参考附录中的代码 \ref{sub_sec_code_block_bm_pah}

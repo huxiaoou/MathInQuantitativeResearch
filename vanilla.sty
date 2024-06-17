@@ -1,0 +1,115 @@
+% this file is used to set the style to be accpeted by Vanilla
+
+\ProvidesPackage{vanilla}
+\usepackage{fontspec}
+\usepackage{ctex}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{fancyhdr} % pagestyle
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{titletoc} % use this package to set section title format
+\usepackage{titlesec} % use this package to set section title format
+\usepackage{listings} % insert program code
+\usepackage{longtable} % insert extremely long table
+\usepackage{csvsimple}
+\usepackage{pgffor}
+\usepackage{ifthen}
+\usepackage{array} % for equation in table
+\setCJKmainfont{楷体}  % 设置衬线字体为楷体，影响正文、目录和章节标题，对应rmfamily
+\setCJKsansfont{黑体}  % 设置无衬线字体为黑体，对应sffamily
+
+% set font for table of contents
+%\titlecontents{标题名}[左间距]{标题格式}{标题标志}{无序号标题}{指引线与页码}[下间距]
+\titlecontents{section}[4em]{\heiti}{\contentslabel{2em}}{}{~\titlerule*[0.6pc]{$.$}~\contentspage}
+\titlecontents{subsection}[6em]{\heiti}{\contentslabel{3em}}{}{~\titlerule*[0.6pc]{$.$}~\contentspage}
+\titlecontents{subsubsection}[8em]{\heiti}{\contentslabel{4em}}{}{~\titlerule*[0.6pc]{$.$}~\contentspage}
+
+% set font for section titles
+\titleformat*{\section}{\Large\sffamily}
+\titleformat*{\subsection}{\large\sffamily}
+\titleformat*{\subsubsection}{\sffamily}
+
+%% 页边距
+\geometry{a4paper,scale=0.8} 
+
+%% set header and foot
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{\textcolor{red}{\kaishu \large Math In Quantitative Research}}
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+
+%% set number for equation, figure and table
+\renewcommand{\theequation}{\arabic{section}.\arabic{subsection}.\arabic{equation}}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{subsection}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{section}.\arabic{subsection}.\arabic{table}}
+
+%% if we want the equaiotn\figure\table number is reset to be zero when new section begins, use the codes below, otherwise, just comment them
+\makeatletter
+\@addtoreset{equation}{subsection}
+\makeatother
+
+\makeatletter
+\@addtoreset{figure}{subsection}
+\makeatother
+
+\makeatletter
+\@addtoreset{table}{subsection}
+\makeatother
+
+% code block
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{lightgray}{rgb}{0.9,0.9,0.9}
+
+\lstset{
+    frame=tb,
+    backgroundcolor=\color{lightgray},%代码块背景色为浅灰色
+    rulesepcolor=\color{gray}, %代码块边框颜色
+    language=Python,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    basicstyle={\small\ttfamily},
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=3
+}
+
+% theorem
+\newtheorem{theorem}{\heiti 定理}
+\newtheorem{mingti}{\heiti 命题}
+\newtheorem{problem}{\heiti 问题}
+\newtheorem{solution}{\heiti 解}
+\newtheorem{remark}{\heiti 注}
+\renewcommand{\proofname}{\heiti 证明}
+
+% freq used command
+\newcommand{\Corr}{\mathbf{Corr}}
+\newcommand{\Cov}{\mathbf{Cov}}
+\newcommand{\Var}{\mathbf{Var}}
+\newcommand{\Std}{\mathbf{Std}}
+\newcommand{\Mean}{\mathbf{Mean}}
+\newcommand{\Skew}{\mathbf{Skew}}
+\newcommand{\E}{\mathbf{E}}
+\newcommand{\N}{\mathbf{N}}
+\newcommand{\Sign}{\mathbf{sign}}
+\newcommand{\ud}{\,\mathrm{d}}
+\newcommand{\CondPipe}{\hspace{0.2em}|\hspace{0.2em}}
+\newcommand{\argmin}{\arg\!\min}
+\newcommand{\argmax}{\arg\!\max}

@@ -1,0 +1,82 @@
+\section{Log Norm}
+
+\subsection{定义}
+
+已知非负随机变量$X$满足参数为$(\mu,\sigma)$对数正态分布，即
+
+\begin{equation}
+    \ln{X} \sim \rm{N}(\mu,\sigma^2)
+\end{equation}
+
+\subsection{分布函数}
+
+\begin{equation}
+    \begin{array}{rcl}
+        F(x) & = & \Pr(X \leq x)                     \\
+             & = & \Pr(\ln X \leq \ln x)             \\
+             & = & \Phi (\frac{\ln x - \mu}{\sigma})
+    \end{array}
+\end{equation}
+
+\subsection{概率密度}
+
+\begin{equation}\label{eq_lognorm_prob_density}
+    \begin{array}{rcl}
+        f(x) & = & F'(x)                                                                                   \\
+             & = & \Phi' (\frac{\ln x - \mu}{\sigma}) (\frac{\ln x - \mu}{\sigma})'                        \\
+             & = & \frac{1}{\sqrt{2\pi\sigma^2}}\exp\{-\frac{(\ln x - \mu)^2}{2\sigma^2}\}\cdot\frac{1}{x}
+    \end{array}
+\end{equation}
+
+\subsection{期望}
+
+记$z = \frac{\ln x - \mu}{\sigma}$，则$x = \exp\{\sigma z + \mu\}$， 从而
+
+\begin{equation}
+    \ud x = \exp(\sigma z + \mu)\sigma \ud z
+\end{equation}
+
+于是
+
+\begin{equation}\label{eq_lognorm_e1}
+    \begin{array}{rcl}
+        \E X & = & \int_0^\infty xf(x)\ud x                                                                                                        \\
+             & = & \int_0^\infty \frac{1}{\sqrt{2\pi\sigma^2}}\exp\{-\frac{(\ln x - \mu)^2}{2\sigma^2}\}\ud x                                      \\
+             & = & \int_{-\infty}^\infty\frac{1}{\sqrt{2\pi}}\exp\{-\frac{z^2}{2}\} \exp\{\sigma z + \mu\} \ud z                                     \\
+             & = & \int_{-\infty}^\infty\frac{1}{\sqrt{2\pi}}\exp\{-\frac{z^2}{2}+ \sigma z -\frac{\sigma^2}{2} + \mu + \frac{\sigma^2}{2}\} \ud z \\
+             & = & \exp\{\mu + \frac{\sigma^2}{2}\}\int_{-\infty}^\infty\frac{1}{\sqrt{2\pi}}\exp\{ -\frac{(z-\sigma)^2}{2}\} \ud z                  \\
+             & = & \exp\{\mu + \frac{\sigma^2}{2}\}
+    \end{array}
+\end{equation}
+
+\subsection{方差}
+\begin{equation}
+    \begin{array}{rcl}
+        \E X^2 & = & \int_0^\infty x^2f(x)\ud x                                                                                                        \\
+               & = & \int_0^\infty \frac{1}{\sqrt{2\pi\sigma^2}}\exp\{-\frac{(\ln x - \mu)^2}{2\sigma^2}\}x\ud x                                      \\
+               & = & \int_{-\infty}^\infty\frac{1}{\sqrt{2\pi}}\exp\{-\frac{z^2}{2}\} \exp\{2\sigma z + 2\mu\} \ud z                                     \\
+               & = & \int_{-\infty}^\infty\frac{1}{\sqrt{2\pi}}\exp\{-\frac{z^2}{2}+ 2\sigma z -2\sigma^2 + 2\mu + 2\sigma^2\} \ud z \\
+               & = & \exp\{2\mu + 2\sigma^2\}\int_{-\infty}^\infty\frac{1}{\sqrt{2\pi}}\exp\{ -\frac{(z-2\sigma)^2}{2}\} \ud z                  \\
+               & = & \exp\{2\mu + 2\sigma^2\}
+    \end{array}
+\end{equation}
+
+从而
+
+\begin{equation}
+    \Var(X) = \E X^2 - (\E X )^2 = e^{2\mu+\sigma^2}(e^{\sigma^2}-1)
+\end{equation}
+
+\subsection{小结}
+
+一方面，由于$\ln(\cdot)$的凹函数性质，可知
+
+\begin{equation}
+    \E \ln(X) \leq \ln(\E X)
+\end{equation}
+
+另一方面，经过计算，可以直接验证该结论。
+
+\begin{equation}
+    \mu = \E \ln(X) \leq \ln(\E X) = \mu + \frac{\sigma^2}{2}
+\end{equation}

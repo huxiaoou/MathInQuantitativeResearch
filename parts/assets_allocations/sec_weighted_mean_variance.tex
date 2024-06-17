@@ -1,0 +1,22 @@
+\section{加权均值与方差}
+
+已知样本矩阵$\vec{X}$的维度是$J\times P$，其中$J$表示样本数量，$P$表示变量个数。对每个样本，有对应的权重$w_j, 1\leq j\leq J$，$w_j$构成$J\times 1$向量， $\vec{w} = [w_1,...w_J]^T$。
+
+那么样本的加权均值为
+
+\begin{equation}
+    \vec{\bar{X}} = \vec{X}^T\vec{w} = \sum_{j=1}^Jw_j\vec{X}^T_{j\cdot}
+\end{equation}
+
+其中$\vec{X}_{j\cdot}$表示$\vec{X}$的第$j$行，即第$j$个样本，其维度为$1\times P$。
+
+样本的加权协方差为
+
+\begin{equation}
+    \begin{aligned}
+        \Cov(\vec{X}) & = \sum_{j=1}^J(\vec{X}^T_{j\cdot} - \vec{\bar{X}})w_j(\vec{X}^T_{j\cdot} - \vec{\bar{X}})^T                                                           \\
+                      & = \sum_{j=1}^J\vec{X}^T_{j\cdot}w_j\vec{X}_{j\cdot} - 2\sum_{j=1}^Jw_j\vec{X}^T_{j\cdot}\vec{\bar{X}}^T + \sum_{j=1}^Jw_j\vec{\bar{X}}\vec{\bar{X}}^T \\
+                      & = \sum_{j=1}^J\vec{X}^T_{j\cdot}w_j\vec{X}_{j\cdot} -2\vec{\bar{X}}\vec{\bar{X}}^T + \vec{\bar{X}}\vec{\bar{X}}^T \\
+                      & = \vec{X}^TD(\vec{w})\vec{X} - \vec{\bar{X}}\vec{\bar{X}}^T
+    \end{aligned}
+\end{equation}

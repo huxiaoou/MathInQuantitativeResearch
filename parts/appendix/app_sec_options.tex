@@ -1,0 +1,28 @@
+\section{布朗运动}
+\subsection{布朗运动路径模拟}\label{sub_sec_code_block_bm_pah}
+\begin{lstlisting}[language=Python]
+    import numpy as np
+    import scipy.stats as sps
+
+    def get_simu_path(path_num: int, step_num: int, s0: float = 100, annual_mu: float = 0, annual_sigma: float = 1, dt: float = 0.01):
+        m_step = annual_mu * dt
+        s_step = annual_sigma * np.sqrt(dt)
+        r = sps.norm.rvs(size=(path_num, step_num), loc=m_step, scale=s_step)
+        return np.cumprod(1 + r, axis=1) * s0
+
+
+    N = 10000
+    S0 = 100
+    mu, sigma = 0.15, 0.30
+    size_n, step = 104, 1 / 52
+
+    simu_path = get_simu_path(path_num=N, step_num=size_n, s0=S0, annual_mu=mu, annual_sigma=sigma, dt=step)
+    S_T = simu_path[:, size_n - 1]
+
+    E_LOG_S, E0 = np.mean(np.log(S_T / S0)), mu * size_n * step - sigma ** 2 / 2 * size_n * step
+    LOG_E_S, E1 = np.log(np.mean(S_T / S0)), mu * size_n * step
+
+    print("E[log[S]] = {:8.4f} | Theory = {:8.4f}".format(E_LOG_S, E0))
+    print("log[E[S]] = {:8.4f} | Theory = {:8.4f}".format(LOG_E_S, E1))
+
+\end{lstlisting}

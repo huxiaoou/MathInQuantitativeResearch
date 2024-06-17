@@ -1,0 +1,18 @@
+\section{模型假设}
+
+一般的线性回归模型可以用下面的记号简单描述为
+
+\begin{equation}
+  \bm {Y} = \bm{X} \bm{b} + \bm{\epsilon}
+\end{equation}
+
+以及对样本给定的权重$\bm{w}$向量。其中，
+
+\begin{itemize}
+  \item $\bm{Y}$ 是$n\times 1$向量，即自变量，已知。
+  \item $\bm{X}$ 是$n\times k$矩阵，即因变量，已知。一般地，应当要求$n>k$,且$\bm{X}$满秩，其秩为$k$。假设$\bm{X}$的某一列（不妨设为第一列）全部为1，则这是一个带有截距项的回归模型；否则（即没有任何一列全部为1），这是一个不带截距项的回归。
+  \item $\bm{\epsilon}$ 是$n\times 1$向量，其每个元素$\epsilon_i$间相互独立，且$\E \epsilon_i=0, \Var(\epsilon_i)=\sigma_i^2$。注意，若不使用最大似然估计，可以不要求$\epsilon_i$服从正态分布。$\bm{\epsilon}$是未知不可观测的，只能通过回归对其估计。
+  \item $\bm{w}$ 是 $n\times 1$向量，已知。若$\sigma_i = \sigma$，则所有样本等权回归，$w_i = \frac{1}{n}$; 否则，$w_i \propto \frac{1}{\sigma_i^2}$。
+  \item $\bm{b}$是$p\times 1$向量，即各自变量的系数，待估计的对象。
+\end{itemize}
+

@@ -1,0 +1,183 @@
+\section{BS公式}
+
+\subsection{符号和前置结论}
+
+假设当前时刻股票价格为$S_0$，$T$时刻股价为$S_T$服从对数正态分布，即
+
+\begin{equation}
+    \ln S_T \sim \N(\ln S_0 + (\mu - \frac{\sigma^2}{2})T, \sigma^2T) = \N(\mu', \sigma'^2)
+\end{equation}
+
+其中
+
+\begin{equation}
+    \left\{
+    \begin{array}{rcl}
+        \mu'    & = & \ln S_0 + (\mu - \frac{\sigma^2}{2})T \\
+        \sigma' & = & \sigma\sqrt{T}
+    \end{array}
+    \right.
+\end{equation}
+
+则有
+
+\begin{equation}
+    \mu' + \frac{\sigma'^2}{2} = \ln S_0 + \mu T
+\end{equation}
+
+以及若设$z = \frac{\ln x - \mu'}{\sigma'}$，则$x = e^{\sigma'z + \mu'}$
+
+\begin{equation}
+    \ud x = \sigma' e^{\sigma'z + \mu'} \ud z
+\end{equation}
+
+以及由\ref{eq_lognorm_prob_density}的结论，$S_T$的概率密度函数$f(x)$为
+
+\begin{equation}
+    f(x) = \frac{1}{\sqrt{2\pi}\sigma'}\exp\{-\frac{(\ln x - \mu')^2}{2\sigma'^2}\}\frac{1}{x}
+\end{equation}
+
+以下用$K$表示期权的执行价格，用$\N(\cdot)$表示标准正态分布的分布函数，又记$d_1, d_2$如下
+
+\begin{equation}
+    \left\{
+    \begin{array}{rcl}
+        d_1 & = & \sigma' - \frac{\ln K -\mu'}{\sigma'} =\frac{\ln \frac{S_0}{K} + (\mu + \frac{\sigma^2}{2})T }{\sigma\sqrt{T}} \\
+        d_2 & = & \frac{\mu' - \ln K}{\sigma'} =\frac{\ln \frac{S_0}{K} + (\mu - \frac{\sigma^2}{2})T}{\sigma\sqrt{T}}           \\
+    \end{array}
+    \right.
+\end{equation}
+
+显然有
+
+\begin{equation*}
+    d_1 - d_2 = \sigma' = \sigma \sqrt{T}
+\end{equation*}
+
+有了上述表示后，可以推导欧式期权的定价公式如下
+
+\subsection{看涨期权}
+
+对看涨期权$C$
+
+\begin{equation}
+    C = e^{-\mu T}\E[\max (S_T- K,0)]
+\end{equation}
+
+其中
+
+\begin{equation}
+    \begin{array}{rcl}
+        \E[\max (S_T- K,0)] & = & \int_K^\infty(x - K)f(x) \ud x                         \\
+                            & = & \int_K^\infty xf(x) \ud x - K \int_K^\infty f(x) \ud x \\
+                            & = & I - II
+    \end{array}
+\end{equation}
+
+其中，对$II$直接计算可得
+
+\begin{equation}
+    \begin{array}{rcl}
+        II & = & K \int_K^\infty f(x) \ud x                                           \\
+           & = & K \Pr(S_T > K)                                                       \\
+           & = & K \Pr(\frac{\ln S_T - \mu'}{\sigma'} > \frac{\ln K - \mu'}{\sigma'}) \\
+           & = & K \N( - \frac{\ln K - \mu'}{\sigma'})                                \\
+           & = & K \N(d_2)
+    \end{array}
+\end{equation}
+
+对$I$使用换元$z = \frac{\ln x - \mu'}{\sigma'}$可得
+
+\begin{equation}
+    \begin{array}{rcl}
+        I & = & \int_K^\infty xf(x) \ud x                                                                                                                \\
+          & = & \int_{K}^\infty \frac{1}{\sqrt{2\pi}\sigma'}\exp\{-\frac{(\ln x - \mu')^2}{2\sigma'^2}\} \ud x                                           \\
+          & = & \int_{\frac{\ln K - \mu'}{\sigma'}}^\infty \frac{1}{\sqrt{2\pi}} \exp\{-\frac{z^2}{2} + \sigma'z + \mu'\}\ud z                           \\
+          & = & \exp\{\mu'+\frac{\sigma'^2}{2}\} \int_{\frac{\ln K - \mu'}{\sigma'}}^\infty \frac{1}{\sqrt{2\pi}}\exp\{-\frac{(z -\sigma')^2}{2}\} \ud z \\
+          & = & S_0 e^{\mu T} \N(-(\frac{\ln K - \mu'}{\sigma'} - \sigma'))                                                                              \\
+          & = & S_0 e^{\mu T} \N(d_1)
+    \end{array}
+\end{equation}
+
+综合以上有
+
+\begin{equation}
+    C = S_0\N(d_1) - K\N(d_2)e^{-\mu T}
+\end{equation}
+
+\subsection{看跌期权}
+
+对看跌期权$P$
+
+\begin{equation}
+    P = e^{-\mu T}\E[\max (K - S_T,0)]
+\end{equation}
+
+其中
+
+\begin{equation}
+    \begin{array}{rcl}
+        \E[\max (K - S_T, 0)] & = & \int_0^K(K - x)f(x) \ud x                   \\
+                              & = & K\int_0^K f(x) \ud x - \int_0^K xf(x) \ud x \\
+                              & = & III - IV
+    \end{array}
+\end{equation}
+
+其中，对$III$直接计算可得
+
+\begin{equation}
+    \begin{array}{rcl}
+        III & = & K \int_0^K f(x) \ud x                                                   \\
+            & = & K \Pr(S_T \leq K)                                                       \\
+            & = & K \Pr(\frac{\ln S_T - \mu'}{\sigma'} \leq \frac{\ln K - \mu'}{\sigma'}) \\
+            & = & K \N(\frac{\ln K - \mu'}{\sigma'})                                      \\
+            & = & K \N(-d_2)
+    \end{array}
+\end{equation}
+
+对$IV$使用换元$z = \frac{\ln x - \mu'}{\sigma'}$可得
+
+\begin{equation}
+    \begin{array}{rcl}
+        I & = & \int_0^K xf(x) \ud x                                                                                                                      \\
+          & = & \int_0^K \frac{1}{\sqrt{2\pi}\sigma'}\exp\{-\frac{(\ln x - \mu')^2}{2\sigma'^2}\} \ud x                                                   \\
+          & = & \int_{-\infty}^\frac{\ln K - \mu'}{\sigma'} \frac{1}{\sqrt{2\pi}} \exp\{-\frac{z^2}{2} + \sigma'z + \mu'\}\ud z                           \\
+          & = & \exp\{\mu'+\frac{\sigma'^2}{2}\} \int_{-\infty}^\frac{\ln K - \mu'}{\sigma'} \frac{1}{\sqrt{2\pi}}\exp\{-\frac{(z -\sigma')^2}{2}\} \ud z \\
+          & = & S_0 e^{\mu T} \N(\frac{\ln K - \mu'}{\sigma'} - \sigma')                                                                                  \\
+          & = & S_0 e^{\mu T} \N(-d_1)
+    \end{array}
+\end{equation}
+
+综合以上有
+
+\begin{equation}
+    P =  K\N(-d_2)e^{-\mu T} - S_0\N(-d_1)
+\end{equation}
+
+\subsection{补充说明}
+
+$\N(d_1), \N(d_2)$的说明
+
+\begin{equation}
+    S_0e^{\mu T}\N(d_1) = \E U,\quad where\, U = S_T\, \text{if} \, S_T > K \, \text{else} \, 0
+\end{equation}
+
+\begin{equation}
+    \N(d_2) = \Pr(S_T > K) = 1 - \Pr(S_T <= K) = 1 - \N(-d_2)
+\end{equation}
+
+以及
+
+\begin{equation}
+    \begin{array}{rcl}
+        C & = & e^{-\mu T}\N(d_2)[S_0e^{\mu T}\frac{\N(d_1)}{\N(d_2)} - K] \\
+          & = & e^{-\mu T}\Pr(S_T > K)\Big\{\E[S_T|S_T > K] - K\Big\}
+    \end{array}
+\end{equation}
+
+\begin{equation}
+    \begin{array}{rcl}
+        P & = & e^{-\mu T}\N(-d_2)[K - S_0e^{\mu T}\frac{\N(-d_1)}{\N(-d_2)}] \\
+        & = & e^{-\mu T}\Pr(S_T \leq K)\Big\{K - \E[S_T|S_T \leq K]\Big\}
+    \end{array}
+\end{equation}

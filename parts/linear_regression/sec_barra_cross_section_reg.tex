@@ -1,0 +1,376 @@
+\section{BARRA截面回归}
+
+\subsection{符号与假设}
+
+假设在固定时刻$t$，横截面上有$n$个股票，分属$p$个行业，以及对应有$q$个风险因子。$n$个股票的收益是$\bm{r}$，BARRA截面回归模型可以写为
+
+\begin{equation}
+    \bm{r} = \bm{Xf} + \bm{\epsilon}
+\end{equation}
+
+其中
+
+\begin{itemize}
+    \item $\bm{r}$是$N\times 1$向量，代表$N$只股票的收益率，已知。
+    \item $\bm{X}$是$N\times K$的矩阵$(N>K)$，已知。$\bm{X}$形如
+          \begin{equation}
+              \bm{X} = \left[
+                  \begin{array}{c ccc ccc}
+                      1      & X_{1,I_1} & \cdots & X_{1, I_P} & X_{1,S_1} & \cdots & X_{1, S_Q} \\
+                      1      & X_{2,I_1} & \cdots & X_{2, I_P} & X_{2,S_1} & \cdots & X_{2, S_Q} \\
+                      \vdots & \vdots    & \vdots & \vdots     & \vdots    & \vdots & \vdots     \\
+                      1      & X_{N,I_1} & \cdots & X_{N, I_P} & X_{N,S_1} & \cdots & X_{N, S_Q} \\
+                  \end{array}
+                  \right]
+          \end{equation}
+          $\bm{X}$按照列可以分成三部分如下：
+          \begin{itemize}
+              \item $\bm{X}$的第1列$\bm{X}_{\cdot1}$全部是1，其含义是代表市场（或者国家）暴露。自然地，该市场内所有股票都在该因子上有1个单位的暴露。
+              \item $\bm{X}$的第2列到第$P+1$列是$N$个股票在$P$个行业上的暴露。即如果个股$n$属于行业$p$, 那么$\bm{X}_{n,I_P} = 1$，否则$\bm{X}_{n,I_P} = 0$。这里还要进一步要求假设对任何一个股票，属于且仅属于一个行业。依照这个定义，容易验证$\bm{X_{\cdot1}} = \bm{X_{\cdot I_1}} + \cdots + \bm{X_{\cdot I_P}}$。
+              \item $\bm{X}$的最后$Q$列是$n$个股票在$Q$个一般因子上的暴露。对这些列仅要求其满秩，且与之前$1+P$列不共线即可。
+          \end{itemize}
+          从上述描述可以看出，$K=1+P+Q$，且$\bm{X}$的秩为$K-1=P+Q$。
+    \item $\bm{f}$是$K\times 1$向量，代表$K$个因子的收益率，未知，是需要估计的对象。
+    \item $\bm{\epsilon}$是$N\times 1$向量，代表$N$只股票的残差收益率，未知，是需要估计的对象。
+    \item $\bm{w}$ 是$N\times 1$向量，已知，代表回归时每个样本的权重。若以$N\times 1$的向量$\bm{v}$代表$N$只股票的市值，通常假设
+          \begin{equation}
+              w_i \propto \sqrt{v_i}
+          \end{equation}
+          $\bm{w}$也可以根据经验直接给出。此外，以下还会经常使用以$\bm{w}$为对角元素的$N\times N$的对角矩阵$\bm{W}$。
+\end{itemize}
+
+\subsection{对共线性问题的处理}
+
+由于$\bm{X}$本身不满秩，因此在上述假设下，问题
+
+\begin{equation}\label{eq_barra_target}
+    \min_{\bm{f}} \bm{(r - Xf)^TW(r - Xf)}
+\end{equation}
+
+的解不唯一。例如假设
+
+\begin{equation}
+    \bm{f}  =  (f_c, f_{I_1},  ..., f_{I_P}, f_{S_1},  ..., f_{S_Q})^T
+\end{equation}
+
+是问题\ref{eq_barra_target}的一个解，那么容易验证，给定$\delta \neq 0$
+
+\begin{equation}
+    \bm{\tilde{f}}  =  (f_c-\delta, f_{I_1}+\delta,  ..., f_{I_P}+\delta, f_{S_1},  ..., f_{S_Q})^T
+\end{equation}
+
+也是问题\ref{eq_barra_target}的一个解。为了解决这个问题，我们需要给出一个约束条件，让解唯一。该约束条件按照下面的推导给出，假设每个行业的市值为$s_{I_i}, 1 \leq  i \leq P$，且有
+
+\begin{equation}
+    \sum_{i=1}^Ps_{I_i} = 1
+\end{equation}
+
+对市场（国家）因子收益率$f_c$以及行业因子收益率$f_{I_i}$，从其定义出发，希望有
+
+\begin{equation}\label{eq_barra_rel_fc_fp}
+    \sum_{i=1}^P s_{I_i}(f_{I_i} + f_c) = f_c
+\end{equation}
+
+\ref{eq_barra_rel_fc_fp}式即表明对行业因子收益率$f_{I_i}$的真实含义:它是传统行业收益率相对市场（国家）因子收益率的超额收益，它与市场（国家）因子收益率相加之后再按照市值加权就是市场 （国家）因子收益率。\ref{eq_barra_rel_fc_fp}式化简后等效为
+
+\begin{equation}
+    \sum_{i=1}^P s_{I_i} f_{I_i} = 0
+\end{equation}
+
+有了这个约束条件，问题\ref{eq_barra_target}的解唯一了。
+
+\subsection{问题的解}
+
+\begin{equation}
+    \left[
+        \begin{array}{c}
+            f_c     \\
+            f_{I_1} \\
+            \vdots  \\
+            f_{I_P} \\
+            f_{S_1} \\
+            \vdots  \\
+            f_{S_Q} \\
+        \end{array}
+        \right] =
+    \left[
+        \begin{array}{c ccc ccc}
+            1      & 0                        & \cdots & 0                            & 0      & \cdots & 0      \\
+
+            0      & 1                        & \cdots & 0                            & 0      & \cdots & 0      \\
+            \vdots & \vdots                   & \vdots & \vdots                       & \vdots & \vdots & \vdots \\
+            0      & 0                        & \cdots & 1                            & 0      & \cdots & 0      \\
+            0      & -\frac{s_{I_1}}{s_{I_P}} & \cdots & -\frac{s_{I_{P-1}}}{s_{I_P}} & 0      & \cdots & 0      \\
+
+            0      & 0                        & \cdots & 0                            & 1      & \cdots & 0      \\
+            \vdots & \vdots                   & \vdots & \vdots                       & \vdots & \vdots & \vdots \\
+            0      & 0                        & \cdots & 0                            & 0      & \cdots & 1      \\
+        \end{array}
+        \right]
+    \left[
+        \begin{array}{c}
+            f_c         \\
+            f_{I_1}     \\
+            \vdots      \\
+            f_{I_{P-1}} \\
+            f_{S_1}     \\
+            \vdots      \\
+            f_{S_Q}     \\
+        \end{array}
+        \right]
+\end{equation}
+
+若记$\bm{f} = \bm{f_{K}}$，上式即
+
+\begin{equation}
+    \bm{f_{K}} = \bm{R}\bm{f_{K-1}}
+\end{equation}
+
+其中$\bm{R}$是$K\times (K-1)$的矩阵，通过它，将$\bm{f_K}$用$\bm{f_{K-1}}$线性表出。于是
+
+\begin{equation}\label{eq_barra_lr_transform}
+    \begin{aligned}
+        \min_{\bm{f}} [\bm{(r - Xf)^TW(r - Xf)}] & = \min_{\bm{f_K}} [\bm{(r - Xf_K)^TW(r - Xf_K)}]                 \\
+                                                 & = \min_{\bm{f_{K-1}}} [\bm{(r - XRf_{K-1})^TW(r - XRf_{K-1})}]   \\
+                                                 & = \min_{\bm{f_{K-1}}} [\bm{(r - X^*f_{K-1})^TW(r - X^*f_{K-1})}] \\
+    \end{aligned}
+\end{equation}
+
+其中
+
+\begin{equation}
+    \bm{X^*} = \bm{XR}
+\end{equation}
+
+此时\ref{eq_barra_lr_transform}式的最后一步是一个标准多元线性回归问题的求解，参考\ref{eq_lr_hat_b_sol}式，其解为
+
+\begin{equation}
+    \begin{array}{rcl}
+        \bm{\hat{f}_{K-1}} & = & [\bm{X^{*T}WX^*}]^{-1}[\bm{X^{*T}Wr}] \\
+                           & = & [\bm{R^TX^TWXR}]^{-1}[\bm{R^TX^TWr}]  \\
+                           & = & \bm{Hr}                               \\
+    \end{array}
+\end{equation}
+
+其中，$\bm{H}$是$(K-1)\times N$的矩阵，定义为
+
+\begin{equation}
+    \bm{H} = [\bm{R^TX^TWXR}]^{-1}\bm{R^TX^TW}
+\end{equation}
+
+容易看出，此时$\bm{f}$的解为
+
+\begin{equation}
+    \bm{\hat{f}} = \bm{\hat{f}_{K}} = \bm{R\hat{f}_{K-1}}=\bm{RHr}
+\end{equation}
+
+以及容易验证
+
+\begin{equation}\label{eq_barra_HXR_is_1}
+    \bm{HX^*} = \bm{HXR} = \bm{1_{K-1}}
+\end{equation}
+
+此外，若记
+
+\begin{equation}
+    \bm{\Omega} = \bm{RH}
+\end{equation}
+
+那么$\bm{\Omega X}$有如下形式
+
+\begin{equation}\label{eq_barra_Omega_X}
+    \bm{\Omega X} =
+    \left[
+        \begin{array}{rr rrrr rrr}
+            1      & s_{I_1}   & s_{I_2}   & \cdots & s_{I_P}   & 0      & \cdots & 0      \\
+
+            0      & 1-s_{I_1} & -s_{I_2}  & \cdots & -s_{I_P}  & 0      & \cdots & 0      \\
+            0      & -s_{I_1}  & 1-s_{I_2} & \cdots & -s_{I_P}  & 0      & \cdots & 0      \\
+            \vdots & \vdots    &           & \vdots & \vdots    & \vdots & \vdots & \vdots \\
+            0      & -s_{I_1}  & -s_{I_2}  & \cdots & 1-s_{I_P} & 0      & \cdots & 0      \\
+
+            0      & 0         &           & \cdots & 0         & 1      & \cdots & 0      \\
+            \vdots & \vdots    &           & \vdots & \vdots    & \vdots & \vdots & \vdots \\
+            0      & 0         &           & \cdots & 0         & 0      & \cdots & 1      \\
+        \end{array}
+        \right]
+\end{equation}
+
+这是因为\ref{eq_barra_Omega_X}式右边可以写为
+
+\begin{equation}
+    \ref{eq_barra_Omega_X}\text{式右边} = \bm{I_{K}} + \bm{US^T}
+\end{equation}
+
+其中$\bm{I_{(K)}}$表示$K$阶单位矩阵，而$\bm{U}$和$\bm{S}$的定义如下
+
+\begin{equation}
+    \bm{U} = \left[
+        \begin{array}{c}
+            1      \\
+            -1     \\
+            \vdots \\
+            -1     \\
+            0      \\
+            \vdots \\
+            0      \\
+        \end{array}
+        \right] \quad
+    \bm{S} = \left[
+        \begin{array}{c}
+            0       \\
+            s_{I_1} \\
+            \vdots  \\
+            s_{I_P} \\
+            0       \\
+            \vdots  \\
+            0       \\
+        \end{array}
+        \right]
+\end{equation}
+
+从而要证明\ref{eq_barra_Omega_X}式等价于证明
+
+\begin{equation}\label{eq_barra_Omega_X_alt}
+    \bm{\Omega X - I_{K} - US^T} = \bm{0_{K\times K}}
+\end{equation}
+
+下面对这个结论给出证明。
+
+\begin{proof}
+    容易验证
+
+    \begin{equation}
+        \bm{S^TR} = \bm{0_{1\times(K-1)}}
+    \end{equation}
+
+    即向量$\bm{S}$与$\bm{R}$中的所有列向量正交。于是我们可以构造$\bm{A}$形如
+
+    \begin{equation}
+        \bm{A} = [\bm{R}, \bm{S}]
+    \end{equation}
+
+    注意$\bm{R}$是$K\times (K-1)$的满秩矩阵，$\bm{S}$是$K\times 1$的向量，且与$\bm{R}$中所有列向量正交，故而$\bm{A}$是一个$K\times K$的满秩矩阵。现在我们记\ref{eq_barra_Omega_X_alt}的左边为$\bm{Z}$，若能证明$\bm{ZA} = \bm{0}_{K\times K}$，则问题得证。而依照定义$\bm{ZA} = [\bm{ZR},\bm{ZS}]$，于是可以分两部来考察。
+
+    \paragraph*{关于$\bm{ZR}$}
+    容易验证
+    \begin{equation}
+        \bm{\Omega X R} = \bm{R [H X R]} = \bm{R I_{(K-1)\times(K-1)}} = \bm{R}
+    \end{equation}
+
+    于是
+    \begin{equation}
+        \bm{ZR} = \bm{\Omega X R} - \bm{I_{K}R} - \bm{U[S^TR]} = \bm{R-R-U0_{1\times (K-1)}} = \bm{0_{K\times(K-1)}}
+    \end{equation}
+
+    \paragraph*{关于$\bm{ZS}$}
+
+    首先将$\bm{X}$按照列写为
+    \begin{equation*}
+        \bm{X} = [\bm{X_c}, \bm{X_1}, \cdots , \bm{X_P}, \bm{Y_1}, \cdots , \bm{Y_Q}]
+    \end{equation*}
+
+    这其中每个元素是$N\times 1$的向量，且依照模型定义
+    \begin{equation}\label{eq_barra_sum_xi_is_xc}
+        \bm{X_c}  = \bm{X_1} + \cdots + \bm{X_P}
+    \end{equation}
+
+    由于\ref{eq_barra_HXR_is_1}式，将其按照列展开即有
+    \begin{equation}
+        \bm{H}[\bm{X_c}, \bm{X_1}-\frac{s_{I_1}}{s_{I_P}}\bm{X_P}, \cdots, \bm{X_{P-1}}-\frac{s_{I_{P-1}}}{s_{I_P}}\bm{X_P}, \bm{Y_1}, \cdots, \bm{Y_Q}] = \bm{1_{K-1}}
+    \end{equation}
+
+    考察上式左右两边第$1$列有
+    \begin{equation}\label{eq_barra_hxc}
+        \bm{HX_c} = [1, \overbrace{0,\cdots, 0}^{P-1\text{个}}, \overbrace{0, \cdots, 0}^{Q\text{个}}]^T
+    \end{equation}
+
+    以及第$2$到$P$列有
+    \begin{equation}\label{eq_barra_hxi}
+        \bm{HX_i} =\frac{s_{I_i}}{s_{I_P}}\bm{HX_P} + [0, \overbrace{0,\cdots,1,\cdots, 0}^{\text{第}i+1\text{位是1，其余位是0}}, \overbrace{0, \cdots, 0}^{Q\text{个}}]^T \quad i=1,2,\cdots P-1
+    \end{equation}
+
+    在\ref{eq_barra_sum_xi_is_xc}式左右两边同时左乘$\bm{H}$，然后将$\ref{eq_barra_hxc}$式和$\ref{eq_barra_hxi}$代入有
+    \begin{equation}
+        \left[
+            \begin{array}{c}
+                1      \\
+                0      \\
+                \vdots \\
+                0      \\
+                0      \\
+                \vdots \\
+                0      \\
+            \end{array}
+            \right]_{1\times(1 + (P-1) + Q)} =
+        \frac{\sum_{i=1}^Ps_{I_i}}{s_{I_P}}\bm{HX_P} +
+        \left[
+            \begin{array}{c}
+                0      \\
+                1      \\
+                \vdots \\
+                1      \\
+                1      \\
+                \vdots \\
+                0      \\
+            \end{array}
+            \right]_{1\times(1 + (P-1) + Q)}
+    \end{equation}
+
+    若记$\bm{U_{K-1}}$为
+    \begin{equation}
+        \bm{U_{K-1}} = [1, \overbrace{-1,\cdots,-1}^{P-1\text{个}}, \overbrace{0, \cdots, 0}^{Q\text{个}}]^T
+    \end{equation}
+
+    注意到$\sum_{i=1}^Ps_{I_i}=1$, 那么此即
+    \begin{equation}
+        \frac{1}{s_{I_P}}\bm{HX_P} = \bm{U_{K-1}}
+    \end{equation}
+
+    现在来计算$\bm{HXS}$，同样将其按照$\bm{X}$的列展开，并结合\ref{eq_barra_hxi}有
+    \begin{equation}\label{eq_barra_core}
+        \bm{HXS} = \sum_{i=1}^Ps_{I_i}\bm{HX_i} =\frac{m}{s_{I_P}}\bm{HX_P} + \bm{S_{K-1}} = m\bm{U_{K-1}} + \bm{S_{K-1}}
+    \end{equation}
+
+    其中
+    \begin{equation}
+        m = \sum_{i=1}^Ps_{I_i}^2 = \bm{S^TS}
+    \end{equation}
+
+    以及
+    \begin{equation}
+        \bm{S_{K-1}} = [0, \overbrace{s_{I_1},\cdots,s_{I_{P-1}}}^{P-1\text{个}}, \overbrace{0, \cdots, 0}^{Q\text{个}}]^T
+    \end{equation}
+
+    并且，依照定义，容易验算有
+    \begin{equation}\label{eq_barra_RU_RS}
+        \left\{
+            \begin{array}{rcl}
+                \bm{RU_{K-1}} & = & \bm{U} + \frac{1}{s_{I_P}}\bm{\delta} \\
+                \bm{RS_{K-1}} & = & \bm{S} - \frac{m}{s_{I_P}}\bm{\delta} \\
+            \end{array}
+        \right.
+    \end{equation}
+
+    其中
+    \begin{equation}
+        \bm{\delta} = [\overbrace{0, \dots, 0}^{P\text{个}},1,\overbrace{0, \dots, 0}^{Q\text{个}}]^T
+    \end{equation}
+
+    至此，在\ref{eq_barra_core}式两边左乘$\bm{R}$，并将\ref{eq_barra_RU_RS}式代入即有
+    \begin{equation}
+        \bm{RHXS} = m\bm{U} + \bm{S}
+    \end{equation}
+    
+    此即
+    \begin{equation}
+        \bm{ZS} = \bm{0}_{K\times 1}
+    \end{equation}
+
+    于是问题得证。
+\end{proof}
+
+\begin{remark}
+    $\bm{\Omega X}$的形式之所以如此重要，是因为它的实际意义，它代表了$K$个纯因子组合在$K$个因子上的暴露。
+\end{remark}
+

@@ -1,0 +1,175 @@
+\section{线性回归}
+\subsection{BARRA截面回归关系验证}\label{sub_sec_code_block_lr_barra}
+\begin{lstlisting}[language=Python]
+    import numpy as np
+    import pandas as pd
+    import scipy.stats as sps
+    
+    
+    def init_X(t_N: int, t_K: int, t_P: int):
+        _X = sps.norm.rvs(size=(t_N, t_K), loc=0, scale=1)
+    
+        # initialize intercept
+        _X[:, 0] = 1
+    
+        # initialize sector
+        _X[:, 1:(t_P + 1)] = 0
+        for _i in range(N):
+            s = np.random.randint(1, t_P + 1)
+            _X[_i, s] = 1
+        return _X
+    
+    
+    def init_weight(t_N: int, t_P: int, t_eq: bool = False):
+        # set instrument weight
+        if t_eq:
+            _w = np.ones(t_N)
+        else:
+            _w = sps.uniform.rvs(size=t_N)
+        _w = _w / _w.sum()
+        _W = np.diag(_w)
+    
+        # set sector weight
+        if t_eq:
+            _iw = np.ones(t_P)
+        else:
+            _iw = sps.uniform.rvs(size=t_P)
+        _iw = _iw / _iw.sum()
+    
+        return _W, _iw
+    
+    
+    def init_f(t_K: int, t_P: int, t_iw: np.ndarray):
+        _f = sps.uniform.rvs(size=(t_K, 1))
+        _m = _f[1:(t_P + 1), 0] @ t_iw
+        _f[1:(t_P + 1), 0] = _f[1:(t_P + 1), 0] - _m
+        return _f
+    
+    
+    def barra_lr(t_X: np.ndarray, t_r: np.ndarray, t_W: np.ndarray, t_iw: np.ndarray):
+        """
+    
+        :param t_X:
+        :param t_r:
+        :param t_W:
+        :param t_iw:
+        :return:
+        """
+        _N, _K = t_X.shape
+        _P = len(t_iw)
+        _Q = _K - 1 - _P
+    
+        # set
+        _R11 = np.vstack([
+            np.diag(np.ones(_P)),
+            np.concatenate([[0], -t_iw[0:-1] / t_iw[-1]])
+        ])  # size = (_P+1, _P)
+    
+        _R12 = np.zeros((_P + 1, _Q))
+        _R21 = np.zeros((_Q, _P))
+        _R22 = np.diag(np.ones(_Q))
+    
+        _R = np.vstack([
+            np.hstack([_R11, _R12]),
+            np.hstack([_R21, _R22]),
+        ])
+    
+        _X = t_X @ _R
+        _H = np.linalg.inv(_X.T @ t_W @ _X) @ (_X.T @ t_W)
+        _f1 = _H @ t_r
+        _f0 = _R @ _f1
+    
+        _omega = _R @ _H
+    
+        return _f0, _omega, _R, _H,
+    
+    
+    N, P, Q = 50, 4, 3
+    K = 1 + P + Q
+    eq_wgt = False
+    
+    # init
+    W, iw = init_weight(t_N=N, t_P=P, t_eq=eq_wgt)
+    f = init_f(t_K=K, t_P=P, t_iw=iw)
+    e = sps.norm.rvs(size=(N, 1), scale=0.1)
+    X = init_X(t_N=N, t_K=K, t_P=P)
+    r = X @ f + e
+    
+    # --- Barra regression
+    fh, omega, R, H = barra_lr(t_X=X, t_r=r, t_iw=iw, t_W=W)
+    
+    # --- output
+    sep = "\n" + "=" * 120
+    sub_sep = "-" * 120
+    
+    print(sep)
+    print("Element arguments:")
+    print("N = ", N)
+    print("P = ", P)
+    print("Q = ", Q)
+    print("K = ", K)
+    
+    print(sep)
+    print("Linear constraints for sector = ")
+    print(np.round(iw, 3))
+    
+    print(sep)
+    print("Omega * X =")
+    print(np.round(omega @ X, 3))
+    
+    print(sep)
+    print("Z = Omega * S - I - U @ S.T =")
+    S = np.zeros((K, 1))
+    S[1:(P + 1), 0] = iw
+    U = np.zeros((K, 1))
+    U[0, 0] = 1
+    U[1:(P + 1), 0] = -1
+    IK = np.identity(K)
+    Z = omega @ X - IK - U @ S.T
+    print(np.round(Z, 3))
+    
+    print(sep)
+    print("HXR =")
+    print(np.round(H @ X @ R, 3))
+    
+    print(sep)
+    print("S.T * R =")
+    print(np.round(S.T @ R, 3))
+    
+    print(sep)
+    print("HX_i - s_i/s_P HX_P = ")
+    for i in range(1, P + 1):
+        print(sub_sep)
+        print("i = ", i)
+        di = (X[:, i] - iw[i - 1] / iw[-1] * X[:, P])
+        print(np.round(H @ di, 3))
+    
+    m = S.T @ S
+    d = np.zeros((K, 1))
+    d[P, 0] = 1
+    
+    print(sep)
+    S_ = np.zeros((K - 1, 1))
+    S_[1:P, 0] = iw[:-1]
+    U_ = np.zeros((K - 1, 1))
+    U_[0, 0] = 1
+    U_[1:P, 0] = -1
+    print("HXS - mU_{K-1} - S_{K-1} = ")
+    print(np.round(H @ X @ S - m * U_ - S_, 3))
+    
+    print(sep)
+    print("RS_{K-1} - S - m / s_P * d = ")
+    print(np.round(R @ S_ - S + m / iw[-1] * d))
+    
+    print(sep)
+    print("RU_{K-1} - U - 1 / s_P * d = ")
+    print(np.round(R @ U_ - U - 1 / iw[-1] * d))
+    
+    print(sep)
+    print("Real Return V.S. estimation:")
+    df = pd.DataFrame({"REAL": f[:, 0], "EST": fh[:, 0]}, index=["F{}".format(z) for z in range(K)])
+    df["DIFF"] = df["REAL"] - df["EST"]
+    print(df)
+    
+
+\end{lstlisting}

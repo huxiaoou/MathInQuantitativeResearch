@@ -1,0 +1,64 @@
+\subsection{数值优化模型}
+
+熵池模型优化目标
+
+\begin{equation}\label{eq_ep_opt_problem}
+    \left\{
+    \begin{aligned}
+         & \min_{\vec{x} \geq 0}\vec{x}^T(\ln\vec{x}-\ln\vec{p}) \\
+         & \vec{F}x \leq \vec{f}                                 \\
+         & \vec{H}x = \vec{h}
+    \end{aligned}
+    \right.
+\end{equation}
+
+其中
+
+\begin{itemize}
+    \item $\vec{x}: J\times 1$ 向量，最终需要求解的对象，代表后验分布，也就是前文中的$\vec{\tilde{p}}$。
+    \item $\vec{p}: J\times 1$ 向量，已知参数，代表先验分布。
+    \item $\vec{F}: M\times J$ 矩阵，已知参数，代表不等关系约束类型的观点，每一行对应一个观点，一共$M$个观点，$M$可以为0，代表没有不等关系约束。
+    \item $\vec{f}: M\times 1$ 矩阵，已知参数，代表不等关系约束的右侧，可以全部为零。
+    \item $\vec{H}: N\times J$ 矩阵，已知参数，代表相等关系约束类型的观点，每一行对应一个观点，一共$N$个观点，一般情况下$N\geq1$，这是由于需要要求所有样本对应的概率之后为1，即$\vec{x}^T\vec{1}=1$，即$\vec{H}$至少有一个全部为1的行。
+    \item $\vec{h}: M\times 1$ 矩阵，已知参数，代表相等关系约束的右侧，对应$H$全为1的那一行的元素是1。
+\end{itemize}
+
+使用Lagrange 乘子法，\ref{eq_ep_opt_problem}式的Lagrange形式是
+
+\begin{equation}\label{eq_ep_opt_lagrange}
+    \mathbf{L}(\vec{x}, \vec{\lambda}, \vec{\nu}) = \vec{x}^T(\ln\vec{x}-\ln\vec{p}) + \vec{\lambda}^T(\vec{F}\vec{x}-\vec{f}) + \vec{\nu}^T(\vec{H}\vec{x}-\vec{h})
+\end{equation}
+
+其中
+\begin{itemize}
+    \item $\vec{\lambda} = [\lambda_1,...,\lambda_M]^T$ 是 $M\times 1$向量
+    \item $\vec{\nu} = [\nu_1,...,\nu_N]^T$ 是 $N\times 1$向量
+\end{itemize}
+
+\ref{eq_ep_opt_lagrange}式对$\vec{x}$求偏导有
+
+\begin{equation}
+    \frac{\partial \mathbf{L}}{\partial \vec{x}} = \ln\vec{x}-\ln\vec{p} + \vec{1}_{J\times 1} + \vec{F}^T\vec{\lambda} + \vec{H}^T\vec{\nu}
+\end{equation}
+
+由此可知
+
+\begin{equation}\label{eq_x_lbd_nu}
+    \vec{x}(\vec{\lambda},\vec{\nu}) = \exp\Big\{\ln\vec{p} - \vec{1}_{J\times 1} - \vec{F}^T\vec{\lambda} - \vec{H}^T\vec{\nu}\Big\}
+\end{equation}
+
+定义$\mathbf{L}$的共轭函数$\mathbf{G}$为
+
+\begin{equation}
+    \mathbf{G}(\vec{\lambda},\vec{\nu}) = \mathbf{L}(\vec{x}(\vec{\lambda}, \vec{\nu}), \vec{\lambda}, \vec{\nu})
+\end{equation}
+
+参考Lagrange乘子法理论，原问题等效于
+
+\begin{equation}\label{eq_ep_opt_dual}
+    (\vec{\lambda}^*,\vec{\nu}^*) = \argmin_{\vec{\lambda}\geq \vec{0}, \vec{\nu}} \{\mathbf{G}(\vec{\lambda},\vec{\nu})\}
+\end{equation}
+
+因此，最终直接优化$\mathbf{G}$即可。
+
+上述推导将问题从优化$\mathbf{L}$变形为优化$\mathbf{G}$，需要优化的变量个数由$J$调整为$M+N$。在实际计算中，$J$（抽样数量）通常很大，而$M,N$（观点数量）通常相对较小，这样就大大简化了问题难度。同时$\mathbf{G}$关于$(\vec{\lambda}, \vec{\nu})$的一阶偏导（Jacob向量）可以直接给出（在下一节给出），这样也可以大大加速优化过程。

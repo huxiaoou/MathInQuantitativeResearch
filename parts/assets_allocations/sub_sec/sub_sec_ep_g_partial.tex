@@ -1,0 +1,167 @@
+\subsection{$\mathbf{G}$的一阶偏导}
+为加速优化问题的求解，需要用到$\mathbf{G}$的一阶偏导。
+\subsubsection{一些记号}
+定义$\vec{F}_{\cdot j}$表示$\vec{F}$的第$j$列，$\vec{H}_{\cdot j}$表示$\vec{H}$的第$j$列，$1\leq j \leq J$， 即
+
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        \vec{F} & = [\vec{F}_{\cdot 1}, ..., \vec{F}_{\cdot J}] \\
+        \vec{H} & = [\vec{H}_{\cdot 1}, ..., \vec{H}_{\cdot J}]
+    \end{aligned}
+    \right.
+\end{equation}
+
+则
+
+\begin{equation*}
+    \vec{F}^T\vec{\lambda} = \left[
+        \begin{aligned}
+             & \vec{F}_{\cdot 1}^T\vec{\lambda} \\
+             & \cdots                           \\
+             & \vec{F}_{\cdot J}^T\vec{\lambda}
+        \end{aligned}
+        \right] \quad
+    \vec{H}^T\vec{\nu} = \left[
+        \begin{aligned}
+             & \vec{H}_{\cdot 1}^T\vec{\nu} \\
+             & \cdots                       \\
+             & \vec{H}_{\cdot J}^T\vec{\nu}
+        \end{aligned}
+        \right]
+\end{equation*}
+
+\begin{equation*}
+    \vec{F}\vec{x} = \sum_{j=1}^J\vec{F}_{\cdot j}x_j \quad \vec{H}\vec{x} = \sum_{j=1}^J\vec{H}_{\cdot j}x_j
+\end{equation*}
+
+\subsubsection{$\mathbf{G}$的具体形式}
+\begin{equation}
+    \mathbf{G}(\vec{\lambda},\vec{\nu}) = \sum_{j=1}^Jx_j(\ln x_j-\ln p_j)+\vec{\lambda}^T\vec{F}\vec{x}-\vec{\lambda}^T\vec{f} + \vec{\nu}^T\vec{H}\vec{x}-\vec{\nu}^T\vec{h}
+\end{equation}
+
+其中，由\ref{eq_x_lbd_nu}式可知
+
+\begin{equation}\label{eq_xj_lbd_nu}
+    x_j(\lambda, \nu) = \exp\Big\{\ln p_j - 1 - \vec{F}_{\cdot j}^T\vec{\lambda} - \vec{H}_{\cdot j}^T\vec{\nu}\Big\}
+\end{equation}
+
+\subsubsection{$\vec{x}$关于$(\vec{\lambda}, \vec{\nu})$的一阶偏导}
+由\ref{eq_xj_lbd_nu}式可知
+
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        \frac{\partial x_j(\lambda, \nu)}{\partial \vec{\lambda}} & = - x_j(\lambda, \nu)\vec{F}_{\cdot j} \\
+        \frac{\partial x_j(\lambda, \nu)}{\partial \vec{\nu}}     & = - x_j(\lambda, \nu)\vec{H}_{\cdot j}
+    \end{aligned}
+    \right.
+\end{equation}
+
+以此，可以分别定义$M\times J$的矩阵$\frac{\partial\vec{x}}{\partial \vec{\lambda} }$:
+
+\begin{equation}
+    \begin{aligned}
+        \frac{\partial \vec{x}}{\partial \vec{\lambda}} & =\Big[\frac{\partial x_1(\lambda, \nu)}{\partial \vec{\lambda}},...,\frac{\partial x_J(\lambda, \nu)}{\partial \vec{\lambda}}\Big] \\
+                                                        & = -\Big[x_1(\lambda, \nu)\vec{F}_{\cdot j},...,x_1(\lambda, \nu)\vec{F}_{\cdot J}\Big]                                             \\
+                                                        & = -\vec{F}D(\vec{x})
+    \end{aligned}
+\end{equation}
+
+以及类似的$N\times J$的矩阵$\frac{\partial\vec{x}}{\partial \vec{\nu} }$
+
+\begin{equation}
+    \frac{\partial \vec{x}}{\partial \vec{\nu}} =-\vec{H}D(\vec{x})
+\end{equation}
+
+其中$D(\vec{x})$表示以$\vec{x}$的每个元素为对角线元素的$J\times J$对角矩阵。此外，还有
+
+\begin{equation}\label{eq_3elements_partial}
+    \left\{
+    \begin{aligned}
+        \frac{\partial \vec{\lambda}^T\vec{F}\vec{x}}{\partial \vec{\lambda}} & = \vec{F}\vec{x} + \frac{\partial \vec{x}}{\partial \vec{\lambda}}\vec{F}^T\vec{\lambda} \\
+        \frac{\partial \vec{\lambda}^T\vec{F}\vec{x}}{\partial \vec{\nu}}     & = \frac{\partial \vec{x}}{\partial \vec{\nu}}\vec{F}^T\vec{\lambda}                      \\
+        \frac{\partial \vec{\nu}^T\vec{H}\vec{x}}{\partial \vec{\nu}}         & = \vec{H}\vec{x} + \frac{\partial \vec{x}}{\partial \vec{\nu}}\vec{H}^T\vec{\nu}         \\
+        \frac{\partial \vec{\nu}^T\vec{H}\vec{x}}{\partial \vec{\lambda}}     & = \frac{\partial \vec{x}}{\partial \vec{\lambda}}\vec{H}^T\vec{\nu}                      \\
+    \end{aligned}
+    \right.
+\end{equation}
+
+下面对\ref{eq_3elements_partial}的一个式子进行推导，另外三个完全同理可证。首先将其写成标量求和的形式有
+
+\begin{equation}
+    \vec{\lambda}^T\vec{F}\vec{x} =  \vec{\lambda}^T\sum_{j=1}^J\vec{F}_{\cdot j}x_j = \sum_{j=1}^J\vec{\lambda}^T\vec{F}_{\cdot j}x_j = \sum_{j=1}^J\sum_{m=1}^M\lambda_mF_{m,j}x_j
+\end{equation}
+
+对上式中每一个元素求偏导有
+
+\begin{equation}
+    \frac{\partial \lambda_mF_{m,j}x_j}{\partial\lambda_i} = \left\{
+    \begin{aligned}
+        \quad \lambda_mF_{m,j}\frac{\partial x_j}{\partial \lambda_i}              & \quad  i\neq m \\
+        \quad F_{m,j}x_j + \lambda_mF_{m,j}\frac{\partial x_j}{\partial \lambda_i} & \quad i = m
+    \end{aligned}
+    \right.
+\end{equation}
+
+写成对$\vec{\lambda}$求导的向量形式有
+
+\begin{equation}
+    \frac{\partial \lambda_mF_{m,j}x_j}{\partial\vec{\lambda}} = \left[
+        \begin{aligned}
+            0          \\
+            \vdots     \\
+            F_{m,j}x_j \\
+            \vdots     \\
+            0          \\
+        \end{aligned}
+        \right] + \left[
+        \begin{aligned}
+            \lambda_mF_{m,j}\frac{\partial x_j}{\partial \lambda_1} \\
+            \vdots                                                  \\
+            \lambda_mF_{m,j}\frac{\partial x_j}{\partial \lambda_m} \\
+            \vdots                                                  \\
+            \lambda_mF_{m,j}\frac{\partial x_j}{\partial \lambda_M}
+        \end{aligned}
+        \right] = \left[
+        \begin{aligned}
+            0          \\
+            \vdots     \\
+            F_{m,j}x_j \\
+            \vdots     \\
+            0          \\
+        \end{aligned}
+        \right] + \lambda_mF_{m,j}\frac{\partial x_j}{\partial \vec{\lambda}}
+\end{equation}
+
+由此
+
+\begin{equation}
+    \sum_{m=1}^M \frac{\partial \lambda_mF_{m,j}x_j}{\partial\vec{\lambda}} = \vec{F}_{\cdot j}x_j + \vec{\lambda}^T\vec{F}_{\cdot j}\frac{\partial x_j}{\partial \vec{\lambda}}
+\end{equation}
+
+于是
+
+\begin{equation}
+    \begin{aligned}
+        \sum_{j=1}^J\sum_{m=1}^M \frac{\partial \lambda_mF_{m,j}x_j}{\partial\vec{\lambda}} & = \sum_{j=1}^J\vec{F}_{\cdot j}x_j + \sum_{j=1}^J\vec{\lambda}^T\vec{F}_{\cdot j}\frac{\partial x_j}{\partial \vec{\lambda}}                                    \\
+                                                                                            & = \vec{F}\vec{x} + \Big[\frac{\partial x_1}{\partial \vec{\lambda}},...,\frac{\partial x_J}{\partial \vec{\lambda}}\Big]\left[\begin{aligned}
+                \vec{F}_{\cdot 1}^T\vec{\lambda}    \\
+                \vdots \\
+                \vec{F}_{\cdot J}^T\vec{\lambda}    \\
+            \end{aligned}\right] \\
+            & = \vec{F}\vec{x} + \frac{\partial \vec{x}}{\partial \vec{\lambda}}\vec{F}^T\vec{\lambda}
+    \end{aligned}
+\end{equation}
+
+\subsubsection{$\mathbf{G}$关于$(\vec{\lambda}, \vec{\nu})$的一阶偏导}
+有了前面几个小节的工作，至此，可以完全写出$\mathbf{G}$关于$(\vec{\lambda}, \vec{\nu})$的一阶偏导如下
+
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        \frac{\partial \mathbf{G}}{\partial\vec{\lambda}} & = \frac{\partial \vec{x}}{\partial \vec{\lambda}}(\ln\vec{x}-\ln\vec{p} +\vec{1}_{J\times 1}) + \vec{F}\vec{x} - \vec{f} + \frac{\partial \vec{x}}{\partial\vec{\lambda}}(\vec{F}^T\vec{\lambda} + \vec{H}^T\vec{\nu}) \\
+        \frac{\partial \mathbf{G}}{\partial\vec{\nu}}     & = \frac{\partial \vec{x}}{\partial \vec{\nu}}(\ln\vec{x}-\ln\vec{p} +\vec{1}_{J\times 1}) + \vec{H}\vec{x} - \vec{h} + \frac{\partial \vec{x}}{\partial\vec{\nu}}(\vec{H}^T\vec{\nu} +\vec{F}^T\vec{\lambda})          \\
+    \end{aligned}
+    \right.
+\end{equation}

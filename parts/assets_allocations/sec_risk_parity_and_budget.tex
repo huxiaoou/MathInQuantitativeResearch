@@ -1,0 +1,80 @@
+\section{风险平价与风险预算模型}
+
+假设组合含有$n$个资产，这些资产收益率$\vec{R}$，是$n$个随机变量组成的随机向量
+
+\[
+    \vec{R} = (r_1,r_2,...,r_n)^T
+\]
+
+$\vec{R}$的期望和协方差分别记为
+
+\[
+    \E \vec{R} = \vec{\mu} \quad \Cov(\vec{R}, \vec{R}) = \vec{\Sigma}
+\]
+
+组合在每个资产上分配的权重为
+
+\[
+    \vec{w} = (w_1,w_2,...,w_n)^T\quad  \text{且}\quad \vec{w}^T\vec{1} =1
+\]
+
+组合的风险被定义为
+
+\begin{equation}
+    \sigma_p(\vec{w}|\vec{\Sigma}) = \sqrt{\vec{w}^T\vec{\Sigma}\vec{w}}
+\end{equation}
+
+资产$i$对组合的边际风险贡献（MRC = Marginal Risk Contribution）定义为
+
+\begin{equation}
+    \begin{aligned}
+        MRC_i & = \frac{\partial \sigma_p}{\partial w_i}                                                                 \\
+              & = \frac{1}{2}\frac{1}{\sigma_p}\frac{\partial\vec{w}^T\vec{\Sigma}\vec{w}}{\partial w_i}                 \\
+              & = \frac{1}{2\sigma_p}\frac{\partial \{\sum_{j=1}^{n}\sum_{k=1}^nw_jw_k\sigma_j\sigma_k \}}{\partial w_i} \\
+              & = \frac{1}{2\sigma_p}(2\sigma_{ii}w_i + 2\sum_{j\neq i}w_j\sigma_{ij})                                   \\
+              & = \frac{1}{\sigma_p}\vec{\Sigma_{i\cdot}}\vec{w}
+    \end{aligned}
+\end{equation}
+
+其中$\vec{\Sigma_{i\cdot}}$表示$\vec{\Sigma}$的第$i$行。将所有$MRC_i$写为一个列向量则有
+
+\begin{equation}
+    \begin{aligned}
+        \frac{\partial \sigma_p}{\partial\vec{w}} & =(MRC_1, ..., MRC_n)^T                                                                  \\
+                                                  & = (\frac{\partial \sigma_p}{\partial w_1},...,\frac{\partial \sigma_p}{\partial w_n})^T \\
+                                                  & =\frac{1}{\sigma_p}(\vec{\Sigma_{1\cdot}}\vec{w},...,\vec{\Sigma_{n\cdot}}\vec{w})      \\
+                                                  & = \frac{1}{\sigma_p}\vec{\Sigma}\vec{w}
+    \end{aligned}
+\end{equation}
+
+资产$i$的总风险贡献（TRC = Total Risk Contribution）定义为
+
+\begin{equation}
+    TRC_i = w_iMRC_i =w_i\frac{\partial \sigma_p}{\partial w_i} =\frac{w_i}{\sigma_p}\vec{\Sigma_{i\cdot}}\vec{w}
+\end{equation}
+
+由此有
+
+\begin{equation}
+    \sum_{i=1}^nTRC_i = \frac{1}{\sigma_p}\vec{w}^T\vec{\Sigma}\vec{w} = \sigma_p
+\end{equation}
+
+定义资产$i$的风险贡献率为资产$i$的总风险贡献与组合风险的比值，用$s_i$来表示，
+
+\begin{equation}
+    s_i = \frac{TRC_i}{\sigma_p}
+\end{equation}
+
+由上式可知
+
+\begin{equation}
+    \sum_{i=1}^n s_i=1
+\end{equation}
+
+风险预算模型即希望进行以下优化
+
+\begin{equation}
+    \min_{\vec{w}}\sum_{i=1}^N(s_i-s_i^*)^2
+\end{equation}
+
+其中$\{s_i^*|0\leq s_i\leq 1, \sum s_i^*=1, i=1,...,n\}$是预先给定的风险预算，当其全部取$\frac{1}{n}$时，即风险平价模型。

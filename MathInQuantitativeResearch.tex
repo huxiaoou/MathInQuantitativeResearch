@@ -1,0 +1,49 @@
+\documentclass[12pt]{article}
+\usepackage{vanilla}
+\usepackage{reportsetup}
+
+\title{{\heiti \Huge Math in Quantitative Research}}
+% \date{} % 使用该语句，则不使用日期。若注释掉该语句，则引入日期。
+\author{{\heiti 胡晓欧}}
+
+\begin{document}
+\maketitle
+\setcounter{tocdepth}{1}
+\tableofcontents
+% \thispagestyle{fancy} % 对首页运用格式。若注释掉该语句，首页不使用样式
+
+% --- 线性回归
+\newpage
+\part{线性回归}
+\input{./parts/linear_regression/sec_intro.tex}
+\input{./parts/linear_regression/sec_import_conclusion.tex}
+\input{./parts/linear_regression/sec_barra_cross_section_reg.tex}
+
+% --- 资产配置
+\newpage
+\part{资产配置}
+\input{./parts/assets_allocations/sec_risk_parity_and_budget.tex}
+\input{./parts/assets_allocations/sec_entropy_pooling.tex}
+\input{./parts/assets_allocations/sec_weighted_mean_variance.tex}
+
+% --- 期权
+\newpage
+\part{期权}
+\input{./parts/options/sec_logNorm.tex}
+\input{./parts/options/sec_brownian_motion.tex}
+\input{./parts/options/sec_bs.tex}
+
+% --- 机器学习
+\newpage
+\part{机器学习}
+\input{./parts/machine_learning/sec_decision_tree.tex}
+
+
+% --- 附录
+\newpage
+\appendix
+\part{附录}
+\input{./parts/appendix/app_sec_options.tex}
+\input{./parts/appendix/app_sec_linear_regression.tex}
+
+\end{document}
