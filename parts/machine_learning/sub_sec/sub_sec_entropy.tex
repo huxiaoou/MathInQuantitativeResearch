@@ -1,0 +1,35 @@
+\subsection{熵}
+
+熵(entropy)表示随机变量不确定性的度量，假设$X$是取有限个值的随机变量，其概率分布为
+
+\begin{equation*}
+    P(X = x_i) = p_i,\quad i=1,2,\cdots, n
+\end{equation*}
+
+则随机变量$X$的的熵定义为
+
+\begin{equation}
+    H(X) = -\sum_{i=1}^np_i\log p_i
+\end{equation}
+
+若$p_i=0$，则定义$0\log 0 = 0$。
+
+熵越大，随机变量的不确定越大。
+
+那么容易验证
+
+\begin{equation}
+    0 \leq H(X) \leq \log n
+\end{equation}
+
+不等式左边容易验证，不等式右边是因为$\log x$是上凸函数，即
+
+\begin{equation*}
+    \frac{\partial^2 \log x}{\partial x^2} = -\frac{1}{x^2} \leq 0
+\end{equation*}
+
+由函数凸性有
+
+\begin{equation*}
+    H(x) = \sum_{i=1}^np_i\log \frac{1}{p_i} \leq \log(\sum_{i=1}^np_i\frac{1}{p_i}) = \log n
+\end{equation*}

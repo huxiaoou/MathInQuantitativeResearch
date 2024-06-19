@@ -1,0 +1,45 @@
+\subsection{Gini指数}
+
+分类问题中，假设随机变量$X$有$N$个分类，样本点属于第$i$类的概率为$p_i$，则概率分布的基尼指数定义为
+
+\begin{equation*}
+    G(X) = \sum_{i=1}^Np_i(1-p_i)
+\end{equation*}
+
+\subsection{条件Gini指数}
+
+类似条件熵，可以定义给定$X$的条件下的$Y$的条件基尼指数
+
+\begin{equation*}
+    G(Y|X) = \sum_{i=1}^Np_{i*}\sum_{j=1}^K\frac{p_{ij}}{p_{i*}}(1 - \frac{p_{ij}}{p_{i*}})
+\end{equation*}
+
+若定义
+
+\begin{equation*}
+    f(x) = x(1 - x)
+\end{equation*}
+
+容易证明
+\begin{equation*}
+    \frac{\partial^2 f}{\partial x^2} = -2 < 0 \quad \text{for} \quad \forall x
+\end{equation*}
+
+由函数凸性有
+\begin{equation*}
+    \sum_{i=1}^N p_i f(x_i) \leq f(\sum_{i=1}^N p_i x_i)
+\end{equation*}
+
+因此
+
+\begin{equation*}
+    \begin{array}{rcl}
+        G(Y|X) & =    & \sum_{i=1}^Np_{i*}\sum_{j=1}^Kf(\frac{p_{ij}}{p_{i*}}) \\
+               & =    & \sum_{i=1}^N\sum_{j=1}^Kp_{i*}f(\frac{p_{ij}}{p_{i*}}) \\
+               & =    & \sum_{j=1}^K\sum_{i=1}^Np_{i*}f(\frac{p_{ij}}{p_{i*}}) \\
+               & \leq & \sum_{j=1}^Kf(\sum_{i=1}^Np_{i*}\frac{p_{ij}}{p_{i*}}) \\
+               & =    & \sum_{j=1}^Kf(\sum_{i=1}^Np_{ij})                      \\
+               & =    & \sum_{j=1}^Kf(p_{*j})                                  \\
+               & =    & G(Y)
+    \end{array}
+\end{equation*}
