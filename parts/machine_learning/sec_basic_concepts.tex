@@ -1,0 +1,26 @@
+\section{基本概念}
+
+\paragraph*{混淆矩阵confusion matrix}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccc}
+        \toprule
+        Predicted\textbackslash Actual & Positive & Negative \\
+        \midrule
+        Positive                       & TP       & FP       \\
+        Negative                       & FN       & TN       \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\paragraph*{TPR和FPR}
+
+\begin{equation*}
+    \left\{
+    \begin{array}{rcl}
+        TPR & = & \frac{TP}{TP + FN} \quad \text{Sensitivity}                              \\
+        FPR & = & \frac{FP}{FP + TN} = 1 - \frac{TN}{FP + TN} \quad 1 - \text{Specificity}
+    \end{array}
+    \right.
+\end{equation*}

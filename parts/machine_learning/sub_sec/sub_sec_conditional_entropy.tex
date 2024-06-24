@@ -143,3 +143,62 @@
     \end{equation*}
 
 \end{remark}
+
+\begin{remark}
+    可以证明
+    \begin{equation*}
+        H(Y) - H(Y|X) = H(X) - H(Y|X)
+    \end{equation*}
+
+    这是因为依照定义有
+    \begin{equation*}
+        \left\{
+        \begin{array}{rcl}
+            H(Y|X) & = & -\sum_{i=1}^Np_{i*}\sum_{j=1}^K\frac{p_{ij}}{p_{i*}}\log\frac{p_{ij}}{p_{i*}} \\
+            H(X|Y) & = & -\sum_{j=1}^Kp_{*j}\sum_{i=1}^N\frac{p_{ij}}{p_{*j}}\log\frac{p_{ij}}{p_{*j}} \\
+        \end{array}
+        \right.
+    \end{equation*}
+
+    进一步化简可得
+    \begin{equation*}
+        \left\{
+        \begin{array}{rclcl}
+            H(Y|X) & = & -\sum_{i=1}^N\sum_{j=1}^Kp_{ij}\log\frac{p_{ij}}{p_{i*}} & = & -\sum_{j=1}^K\sum_{j=1}^Np_{ij}\log\frac{p_{ij}}{p_{i*}} \\
+            H(X|Y) & = & -\sum_{j=1}^K\sum_{i=1}^Np_{ij}\log\frac{p_{ij}}{p_{*j}} & = & -\sum_{i=1}^N\sum_{i=1}^Kp_{ij}\log\frac{p_{ij}}{p_{*j}} \\
+        \end{array}
+        \right.
+    \end{equation*}
+
+    而
+    \begin{equation*}
+        \left\{
+        \begin{array}{rclcl}
+            H(Y) & = & -\sum_{j=1}^Kp_{*j}\log p_{*j} & = & -\sum_{j=1}^K\log p_{*j}\big(\sum_{i=1}^N p_{ij}\big) = -\sum_{j=1}^K\sum_{i=1}^N p_{ij}\log p_{*j}\\
+            H(X) & = & -\sum_{i=1}^Np_{i*}\log p_{i*} & = & -\sum_{i=1}^N\log p_{i*}\big(\sum_{j=1}^K p_{ij}\big) = -\sum_{i=1}^N\sum_{j=1}^K p_{ij}\log p_{i*}\\
+        \end{array}
+        \right.
+    \end{equation*}
+
+    分别相减得到
+    \begin{equation*}
+        \left\{
+        \begin{array}{rclcl}
+            H(Y) - H(Y|X) & = \sum_{j=1}^K\sum_{i=1}^N p_{ij}\log \frac{p_{ij}}{p_{i*}p_{*j}}\\
+            H(X) - H(X|Y) & = \sum_{i=1}^N\sum_{j=1}^K p_{ij}\log \frac{p_{ij}}{p_{i*}p_{*j}}\\
+        \end{array}
+        \right.
+    \end{equation*}
+
+    从而
+    \begin{equation*}
+        MI \triangleq H(Y) - H(Y|X) = H(X) - H(X|Y)
+    \end{equation*}
+
+    其中MI即Mutual Information. 同样的，由$f(x)=x\log x$的凸性可知
+
+    \begin{equation*}
+        MI = \sum_{i=1}^Np_{i*}\sum_{j=1}^K p_{*j} f(\frac{p_{ij}}{p_{i*}p_{*j}}) \geq \sum_{i=1}^Np_{i*}f\Big(\sum_{j=1}^K p_{*j} \frac{p_{ij}}{p_{i*}p_{*j}}\Big) = \sum_{i=1}^Np_{i*}f(1) = 0  
+    \end{equation*}
+
+\end{remark}
