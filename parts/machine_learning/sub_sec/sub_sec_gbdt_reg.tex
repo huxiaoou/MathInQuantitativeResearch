@@ -1,0 +1,103 @@
+\subsection{回归}
+
+$Y$是连续变量
+
+\paragraph{输入}
+
+\begin{itemize}
+    \item 样本集$\{(\vec{x}_i, y_i)\}_{i=1}^N$, 其中$\vec{x}_i$是一个$K$维向量, $y_i\in \mathbb{R} $
+    \item 关于$F(x)$可微损失函数$L$, 常见的是L2惩罚项
+          \begin{equation*}
+              L(y_i, F(x_i)) = \frac{1}{2}(y_i - F(x_i))^2
+          \end{equation*}
+
+          或L1惩罚项
+          \begin{equation*}
+              L(y_i, F(x_i)) = |y_i - F(x_i)|
+          \end{equation*}
+
+\end{itemize}
+
+\paragraph{算法}
+
+\begin{enumerate}
+    \item 初始化常量函数 $F_0(x) = \argmin_\gamma \sum_{i=1}^NL(y_i, \gamma)$
+    \item 对$m=1,2,\cdots, M$
+          \begin{enumerate}
+              \item 对每个样本，计算负梯度值(伪残差, Pseudo Residual)
+                    \begin{equation*}
+                        r_{i,m} = \Bigg[-\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)}\Bigg]\Bigg|_{F(x)=F_{m-1}(x)} \quad \text{for} \quad i=1,2,\cdots,M
+                    \end{equation*}
+              \item 对$\{r_{i,m}\}_{i=1}^N$拟合一颗\textbf{回归决策树}, 并给出终端区域$R_{jm}, j=1,2,\cdots,J_m$
+              \item 对$j=1,2,\cdots, J_m$ 计算
+                    \begin{equation}\label{opt_gbdt_reg_reg_dt}
+                        \gamma_{j,m} = \argmin_{\gamma} \sum_{x_i\in R_{ij}}L(y_i, F_{m-1}(x_i) + \gamma)
+                    \end{equation}
+                    作为终端区域$R_{ij}$的预测
+              \item 更新模型
+                    \begin{equation*}
+                        F_m(x) = F_{m-1}(x) + \nu \sum_{j=1}^{J_m}\gamma_{j,m}I(x\in R_{jm})
+                    \end{equation*}
+          \end{enumerate}
+\end{enumerate}
+
+\begin{remark}
+    对第1步, $F_0(x)$
+
+    若采用L2惩罚项, 那么容易证明就是$F_0(x)$就是$y_i$的均值, 即
+
+    \begin{equation*}
+        F_0(x) = \argmin_\gamma \sum_{i=1}^N(y_i - \gamma)^2 = \frac{1}{N}\sum_{i=1}^Ny_i
+    \end{equation*}
+
+    若采用L1惩罚项, 那么容易证明就是$F_0(x)$就是$y_i$的中位数, 即
+
+    \begin{equation*}
+        F_0(x) = \argmin_\gamma \sum_{i=1}^N|y_i - \gamma|^2 = \mathbf{Median}(y_i)
+    \end{equation*}
+\end{remark}
+
+\begin{remark}
+
+    对第2(a)步
+
+    若采用L2惩罚项, 那么
+
+    \begin{equation*}
+        -\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)} = y_i - F(x_i)
+    \end{equation*}
+
+    若采用L1惩罚项, 那么
+
+    \begin{equation*}
+        -\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)} = \left\{\begin{array}{rcl}
+            -1 & \text{if} \quad F(x_i) > y_i \\
+            0  & \text{if} \quad F(x_i) = y_i \\
+            1  & \text{if} \quad F(x_i) < y_i \\
+        \end{array}
+        \right.
+    \end{equation*}
+
+\end{remark}
+
+\begin{remark}
+    对第2(c)步
+
+    定义
+    \begin{equation*}
+        \epsilon_{i, m-1} = y_i - F_{m-1}(x_i)
+    \end{equation*}
+
+    若采用L2惩罚项, 那么容易证明就是$\gamma_{j,m}$就是那些$R_{jm}$上的样本对应的残差$\epsilon_{i,m-1}$的均值, 以$|R_{jm}|$表示属于这个区域的样本的数量, 那么
+
+    \begin{equation}
+        \gamma_{j,m} = \frac{1}{|R_{jm}|}\sum_{x_i\in R_{ij}}\epsilon_{i, m-1}
+    \end{equation}
+
+    若采用L1惩罚项, 那么容易证明就是$\gamma_{j,m}$就是那些$R_{jm}$上的样本对应的残差$\epsilon_{i,m-1}$的中位数, 即
+
+    \begin{equation}
+        \gamma_{j,m} = \mathbf{Median}_{x_i\in R_{ij}}\big\{\epsilon_{i, m-1}\big\}
+    \end{equation}
+
+\end{remark}
