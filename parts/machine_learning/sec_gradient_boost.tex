@@ -36,11 +36,18 @@
 \end{enumerate}
 
 \begin{remark}
-    在分类问题中, 所有决策树之和$F_m(x), m=0,1,\cdots, M$预测的目标是对数几率值, 即$\log(\text{odds ratio})$, 而不是直接的$y$。也正因为如此，$F_m(x)$给出的预测，不能直接与$y$做差来构造损失函数.而是要首先通过
-    \begin{equation*}
-        p = \frac{e^{\log(\text{odds ratio})}}{1 + e^{\log(\text{odds ratio})}}
-    \end{equation*}
-    这个变换给出概率的预测。然后再将$p$代负的似然函数中得到损失函数. 这与回归问题中, 直接预测$y$的大小是一个比较本质的区别.
+    在分类问题中, 所有决策树之和$F_m(x), m=0,1,\cdots, M$预测的目标是对数几率值, 即$\log[\text{odds ratio}]$, 而不是直接的$y$。也正因为如此，$F_m(x)$给出的预测，不能直接与$y$做差来构造损失函数.而是要首先通过
+    \begin{equation}\label{logoddsratio2p}
+        p = \frac{e^{\log[\text{odds ratio}]}}{1 + e^{\log[\text{odds ratio}]}}
+    \end{equation}
+    这个变换给出概率的预测。然后再将$p$代入负的似然函数中得到损失函数. 这与回归问题中, 直接预测$y$的大小是一个比较本质的区别.
+
+    至于为什么变换是\ref{logoddsratio2p}的形式, 这是因为
+    \begin{equation}
+        -\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)} = y_i - \frac{e^{F(x_i)}}{1 + e^{F(x_i)}}
+    \end{equation}
+
+    这与强调$F(x)$是在预测$\log[\text{odds ratio}]$是一致的.
 \end{remark}
 
 \begin{remark}
@@ -50,22 +57,22 @@
         \sum_{i=1}^N\Big\{y_i\log p_i + (1 - y_i)\log (1 - p_i)\Big\}
     \end{equation*}
 
-    模型的损失函数定义为对数似然函数的相反数, 最小化总损失函数即最大化似然函数, 即
+    其中$p_i=p(x_i)$, 表示第$i$个样本对应的$y_i=1$的概率$P(y_i=1)$, $p(\cdot)$的具体形式目前暂无需指定.模型的损失函数定义为对数似然函数的相反数, 最小化总损失函数即最大化似然函数, 即
 
     \begin{equation*}
-        L^*(\{(\vec{x}_i, y_i)\}_{i=1}^N) = -\sum_{i=1}^N\Big\{y_i\log p_i + (1 - y_i)\log (1 - p_i)\Big\}
+        L^*(\{(p_i, y_i)\}_{i=1}^N) = -\sum_{i=1}^N\Big\{y_i\log p_i + (1 - y_i)\log (1 - p_i)\Big\}
     \end{equation*}
 
-    整理右边,记$u_i$是第$i$个样本的$\log(\text{odds ratio})$, 该样本对应的$y_i=1$的概率$P(y_i=1)$记为$p_i$, 结合$(u_i, p_i)$的定义可知
+    整理右边,记$u_i$是第$i$个样本的$\log(\text{odds ratio})$, 即
 
     \begin{equation*}
-        u_i = \log\frac{p_i}{1 - p_i},\quad p_i = \frac{e^{u_i}}{1 + e^{u_i}}
+        u_i = \log\frac{p_i}{1 - p_i} \triangleq F(x_i),\quad p_i = \frac{e^{u_i}}{1 + e^{u_i}}
     \end{equation*}
 
     得到
 
     \begin{equation*}
-        L^*(\{(\vec{x}_i, y_i)\}_{i=1}^N) = L^*(\{(u_i, y_i)\}_{i=1}^N) = -\sum_{i=1}^N\Big\{y_iu_i - \log(1 + e^{u_i}) \Big\} = \sum_{i=1}^NL(y_i,u_i)
+        L^*(\{(p_i, y_i)\}_{i=1}^N) = L^*(\{(u_i, y_i)\}_{i=1}^N) = -\sum_{i=1}^N\Big\{y_iu_i - \log(1 + e^{u_i}) \Big\} = \sum_{i=1}^NL(y_i,u_i)
     \end{equation*}
 
     其中
@@ -73,11 +80,11 @@
     \begin{equation*}
         L(y_i, u_i) = -\Big\{y_iu_i - \log(1 + e^{u_i})\Big\}
     \end{equation*}
-    
+
     此即损失函数形态的由来.
 
 \end{remark}
-    
+
 \begin{remark}
     对$i=1,2,\cdots, N$, 求$L(y_i, u_i)$关于$u_i$的偏导数有
 
