@@ -43,3 +43,16 @@
                & =    & G(Y)
     \end{array}
 \end{equation*}
+
+\begin{remark}
+    若样本集合$D$根据特征$A$是否取某一可能指$a$被分割成$D_1$和$D_2$两部分, 即
+    \begin{equation*}
+        D_1=\{(x,y)\in D| A(x) = a\}, D_2 = D - D_1
+    \end{equation*}
+
+    则在特征$A$的条件下, 集合D的Gini指数定义为
+
+    \begin{equation}\label{gini_binary}
+        G(D|A) = \frac{|D_1|}{|D|}G(D_1) + \frac{|D_2|}{|D|}G(D_2)
+    \end{equation}
+\end{remark}

@@ -1,8 +1,89 @@
 \subsection{决策树算法概要}
 
-\subsubsection{CART}
+\subsubsection{ID3算法}
 \begin{itemize}
-    \item 决策树是二叉树
-    \item 如果Y是连续变量(continuous variable), 使用回归树，使用平方误差最小化准则。
-    \item 如果Y是分类变量(category variable), 使用分类树，使用基尼指数最小化准则。
+    \item 算法使用信息增益选择特征.
+    \item 在确定一个特征对树进行分裂后, 分裂出多个结点, 结点数量$\geq 2$.
+    \item 在分裂出来的结点继续分裂时, 不再使用上层已经使用过的特征, 直观理解为对特征的使用“一步到位”.
 \end{itemize}
+
+\subsubsection{C4.5算法}
+\begin{itemize}
+    \item 类似ID3, 但是使用信息增益比选择特征.
+\end{itemize}
+
+\subsubsection{CART算法}
+\begin{itemize}
+    \item 决策树是二叉树. 即在确定一个特征对树进行分裂后, 分裂出多个结点, 结点数量$=2$.
+    \item 在分裂出来的结点继续分裂时, 会继续使用上层已经使用过的特征. 直观理解为因为每次2叉树分类可能不够完全, 信息没有充分利用.
+    \item 如果Y是连续变量(continuous variable), 使用回归树, 使用平方误差最小化准则.
+    \item 如果Y是分类变量(category variable), 使用分类树, 使用Gini指数最小化准则.
+\end{itemize}
+
+\subsubsection{CART回归树}
+假设$X$和$Y$分别为输入和输出变量, 并且$Y$是连续变量, 给定训练数据集
+\begin{equation*}
+    D = \{(x_1, y_1), (x_2, y_2), \cdots, (x_N, y_N)\}
+\end{equation*}
+
+一颗回归树对应输入空间(特征空间)的一个划分以及在划分上的输出值.假设已经将输入空间划分为$M$个单元$R_1,R_2,\cdots,R_M$, 并且在每个单元$R_m$上有一个固定的输出值$c_m$, 回归树模型可以表示为
+
+\begin{equation*}
+    f(x) = \sum_{m=1}^Mc_mI(x\in R_m)
+\end{equation*}
+
+当空间划分确定时, 用平方误差$\sum_{x_i\in R_m}(y_i - f(x_i))^2$来表示回归树对于训练数据的预测误差, 用平方误差最小的准则求解每个单元上的最优输出值. 容易验证, 这个最优值就是这个单元上的样本中的$y_i$的平均值. 若以$|R_m|$表示单元$R_m$中样本的数量, 那么
+\begin{equation*}
+    c_m = \frac{1}{|R_m|} \sum_{x_i\in R_m}y_i = \argmin_{c_m}\sum_{x_i\in R_m}(y_i - c_m)^2
+\end{equation*}
+
+于是问题的关键在于采用怎样的划分方式, 划分由下面的算法给出
+
+\paragraph{最小二乘回归树生成算法}
+
+输入: 训练数据集$D$
+输出: 回归树$f(x)$
+
+在训练数据集所在输入空间中, 递归地将每个区域划分为两个子区域并决定每个子区域上的输出值, 构建二叉决策树：
+
+\begin{enumerate}
+    \item 选择最优切分变量$j$和切分点$s$, 求解
+          \begin{equation}\label{cart_reg_split}
+              \min_{j,s}\Bigg[ \min_{c_1}\sum_{x_i\in R_1(j, s)}(y_i - c_1)^2 + \min_{c_2}\sum_{x_i\in R_2(j, s)}(y_i - c_2)^2 \Bigg]
+          \end{equation}
+          遍历$j$, 对固定的切分变量$j$扫描切分点$s$, 选择使\ref{cart_reg_split}式达到最小值的对$(j, s)$.
+    \item 用选定的对(j, s)划分区域并决定相应的输出值
+          \begin{equation*}
+              \begin{array}{rl}
+                  R_1(j,s) = \{x|x^{(j)} \leq s\}                 & R_2(j,s) = \{x|x^{(j)} > s\} \\
+                  c_m = \frac{1}{|R_m|} \sum_{x_i\in R_m(j,s)}y_i & x \in R_m,\quad m=1,2
+              \end{array}
+          \end{equation*}
+    \item 继续对两个子区域调用步骤1和步骤2, 直至满足停止条件.
+    \item 将输入空间划分为$M$个区域$R_1,R_2,\cdots,R_M$, 生成决策树:
+          \begin{equation*}
+              f(x) = \sum_{m=1}^Mc_mI(x\in R_m)
+          \end{equation*}
+\end{enumerate}
+
+\subsubsection{CART分类树}
+
+分类树用Gini指数选择最优特征, 同时确定该特征的最优二值切分点.
+
+\paragraph{CART生成算法}
+
+输入: 训练数据集$D$, 停止计算的条件
+输出: CART决策树$f(x)$
+
+根据训练数据集, 从根结点开始, 递归地对每个结点进行一下操作, 构建二叉决策树:
+
+\begin{enumerate}
+    \item 设结点的训练数据集为$D$, 计算现有特征对该数据集的Gini指数. 此时, 对每一个特征$A$, 对其可能取的每个值$a$, 根据样本点对$A = a$的测试为"是"或"否"将$D$分割为$D_1$和$D_2$两个部分, 利用\ref{gini_binary}式计算$A=a$时的Gini指数.
+    \item 在所有可能的特征$A$以及它们所有可能的切分点$a$中, 选在Gini指数最小的特征及其对应的切分点作为最优特征与最优切分点. 依最优特征与最优切分点, 从现结点生成两个子结点, 将训练数据集依特征分配到两个子结点中去.
+    \item 对两个子结点递归地调用步骤1和步骤2, 直至满足停止条件.
+    \item 生成CART决策树.
+\end{enumerate}
+
+\begin{remark}
+    算法停止计算的条件是结点中的样本个数小于预定阈值, 或样本集的基尼指数小于预定阈值(此时样本基本属于同一类), 或者没有更多特征.
+\end{remark}
