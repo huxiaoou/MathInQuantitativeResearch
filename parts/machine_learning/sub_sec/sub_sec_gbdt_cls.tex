@@ -119,7 +119,10 @@ $Y$是分类变量
     对问题\ref{opt_gbdt_cls_reg_dt}的直接求解很复杂, 因此采用近似处理的方法, 将问题右边在$F_{m-1}(x_i)$处泰勒展开可以得到
 
     \begin{equation*}
-        L_j^* =\sum_{x_i\in R_{ij}}L(y_i, F_{m-1}(x_i) + \gamma) \approx \sum_{x_i\in R_{ij}}\Big\{L(y_i, F_{m-1}(x_i)) + \frac{\partial L(y_i, F_{m-1}(x_i))}{\partial F_{m-1}(x_i)}\gamma + \frac{1}{2}\frac{\partial^2 L}{\partial F_{m-1}(x_i)^2}\gamma^2\Big\}
+        \begin{array}{rcl}
+            L_j^* & =       & \sum_{x_i\in R_{ij}}L(y_i, F_{m-1}(x_i) + \gamma)                                                                                                                                          \\
+                  & \approx & \sum_{x_i\in R_{ij}}\Big\{L(y_i, F_{m-1}(x_i)) + \frac{\partial L(y_i, F_{m-1}(x_i))}{\partial F_{m-1}(x_i)}\gamma + \frac{1}{2}\frac{\partial^2 L(y_i, F_{m-1}(x_i))}{\partial F_{m-1}(x_i)^2}\gamma^2\Big\}
+        \end{array}
     \end{equation*}
 
     对两边求$\gamma$的一阶导函数有
